@@ -1,12 +1,12 @@
 package app
 
 import (
-	v1handler "github.com/dangLuan01/user-manager/internal/handler/v1"
-	"github.com/dangLuan01/user-manager/internal/repository"
-	"github.com/dangLuan01/user-manager/internal/repository/redis"
-	"github.com/dangLuan01/user-manager/internal/routes"
-	v1routes "github.com/dangLuan01/user-manager/internal/routes/v1"
-	v1service "github.com/dangLuan01/user-manager/internal/service/v1"
+	v1handler "github.com/dangLuan01/rebuild-api-movie28/internal/handler/v1"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/repository"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
+	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
+	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
 	"github.com/doug-martin/goqu/v9"
 )
 

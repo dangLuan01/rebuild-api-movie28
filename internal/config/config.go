@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dangLuan01/user-manager/internal/utils"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 )
 
 type DatabaseConfig struct {

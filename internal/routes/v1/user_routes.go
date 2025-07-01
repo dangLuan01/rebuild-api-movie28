@@ -1,7 +1,7 @@
 package v1routes
 
 import (
-	v1handler "github.com/dangLuan01/user-manager/internal/handler/v1"
+	v1handler "github.com/dangLuan01/rebuild-api-movie28/internal/handler/v1"
 	"github.com/gin-gonic/gin"
 )
 

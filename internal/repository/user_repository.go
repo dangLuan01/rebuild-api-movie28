@@ -5,7 +5,7 @@ import (
 	"log"
 	"slices"
 
-	"github.com/dangLuan01/user-manager/internal/models"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	"github.com/doug-martin/goqu/v9"
 )
 

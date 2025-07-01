@@ -3,10 +3,10 @@ package v1service
 import (
 	"fmt"
 
-	"github.com/dangLuan01/user-manager/internal/models"
-	"github.com/dangLuan01/user-manager/internal/repository"
-	"github.com/dangLuan01/user-manager/internal/repository/redis"
-	"github.com/dangLuan01/user-manager/internal/utils"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/repository"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

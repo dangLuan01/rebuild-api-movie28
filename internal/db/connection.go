@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"log"
 	"time"
-	
-	
-	"github.com/dangLuan01/user-manager/internal/config"
+
+	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"

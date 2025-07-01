@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/dangLuan01/user-manager/internal/app"
-	"github.com/dangLuan01/user-manager/internal/config"
-	"github.com/dangLuan01/user-manager/internal/db"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/app"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/db"
 )
 
 func main() {

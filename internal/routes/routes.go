@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/dangLuan01/user-manager/internal/middleware"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 

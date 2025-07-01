@@ -1,4 +1,4 @@
-module github.com/dangLuan01/user-manager
+module github.com/dangLuan01/rebuild-api-movie28
 
 go 1.24.4
 

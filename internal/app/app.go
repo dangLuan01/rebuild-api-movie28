@@ -3,10 +3,10 @@ package app
 import (
 	"log"
 
-	"github.com/dangLuan01/user-manager/internal/config"
-	"github.com/dangLuan01/user-manager/internal/repository/redis"
-	"github.com/dangLuan01/user-manager/internal/routes"
-	"github.com/dangLuan01/user-manager/internal/validation"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/validation"
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

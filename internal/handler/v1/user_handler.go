@@ -3,11 +3,11 @@ package v1handler
 import (
 	"net/http"
 
-	v1dto "github.com/dangLuan01/user-manager/internal/dto/v1"
-	v1service "github.com/dangLuan01/user-manager/internal/service/v1"
+	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
+	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
 
-	"github.com/dangLuan01/user-manager/internal/utils"
-	"github.com/dangLuan01/user-manager/internal/validation"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/validation"
 	"github.com/gin-gonic/gin"
 )
 

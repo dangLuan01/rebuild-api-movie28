@@ -10,7 +10,7 @@ import (
 
 	"time"
 
-	"github.com/dangLuan01/user-manager/internal/config"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
 	"github.com/redis/go-redis/v9"
 )
 
