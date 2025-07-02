@@ -19,7 +19,7 @@ func (ur *GenreRoutes) Register(r *gin.RouterGroup) {
 	genres := r.Group("/genre")
 	{
 		genres.GET("", ur.handler.GetAllGenres)
-		//genres.GET("/:slug", ur.handler.GetUserByUUID)
+		genres.GET("/:slug", ur.handler.GetGenreBySlug)
 		// users.POST("", ur.handler.CreateUser)
 		// users.PUT("/:uuid", ur.handler.UpdateUser)
 		// users.DELETE("/:uuid", ur.handler.DeleteUser)

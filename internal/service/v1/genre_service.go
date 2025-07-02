@@ -47,3 +47,21 @@ func (gs *genreService) GetAllGenres() ([]models.Genre, error) {
 	
 	return genres, nil
 }
+func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int) (models.GenreWithMovie, error) {
+	if page == 0  {
+		page = 1
+	}
+	if pageSize == 0 {
+		pageSize = 20
+	}
+	genre, err := gs.repo.FindBySlug(slug, page, pageSize)
+	if err != nil {
+		return models.GenreWithMovie{}, utils.WrapError(
+			string(utils.ErrCodeInternal),
+			"Faile get genre with list movie",
+			err,
+		)
+	}
+	
+	return genre, nil
+}

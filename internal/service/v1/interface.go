@@ -14,4 +14,5 @@ type UserService interface {
 
 type GenreService interface {
 	GetAllGenres() ([]models.Genre, error)
+	GetGenreBySlug(slug string, page, page_size int) (models.GenreWithMovie, error)
 }

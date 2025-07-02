@@ -17,3 +17,7 @@ func CamelToSnakeCase(str string) string {
 func NormailizeString(text string) string {
 	return strings.ToLower(strings.TrimSpace(text))
 }
+
+func ConvertRating(rating float32) float32 {
+	return float32(int(rating * 10)) / 10
+}

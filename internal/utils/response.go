@@ -41,7 +41,7 @@ func WrapError(code, message string, err error) error {
 }
 
 func ResponseError(ctx *gin.Context, err error) {
-	if appErr, ok :=err.(*AppError);ok {
+	if appErr, ok := err.(*AppError);ok {
 		status := httpStatusFromCode(ErrorCode(appErr.Code))
 		response := gin.H{
 			"error":appErr.Message,
