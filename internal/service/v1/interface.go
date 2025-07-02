@@ -11,3 +11,7 @@ type UserService interface {
 	UpdateUser(uuid string, user models.User) (models.User, error)
 	DeleteUser(uuid string) error
 }
+
+type GenreService interface {
+	GetAllGenres() ([]models.Genre, error)
+}

@@ -1,4 +1,4 @@
-package repository
+package userrepository
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ func NewSqlUserRepository(DB *goqu.Database) UserRepository {
 	}
 }
 
-func (ur *SqlUserRepository) FindAll() ([]models.User, error){
+func (ur *SqlUserRepository) FindAll() ([]models.User, error) {
 	
 	ds := ur.db.From(goqu.T("users")).
 	Select(

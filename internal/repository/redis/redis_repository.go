@@ -32,18 +32,19 @@ func NewRedisRepository(cfg config.RedisConfig) RedisRepository {
 		client: client,
 	}
 }
-func (rd *redisRepository) Set(key string, value any) {
+func (rd *redisRepository) Set(key string, value any) error {
 
 	data, err := json.Marshal(value)
 	if err != nil {
 		log.Printf("❌ Error marshaling JSON: %v", err)
-		return
+		return fmt.Errorf("Error marshaling JSON: %v", err)
 	}
 	timeExp := time.Duration(rand.Intn(200) + 300) * time.Second
 	err = rd.client.Set(ctx, key, data, timeExp).Err()
 	if err != nil {
 		log.Printf("❌ Error setting cache: %v", err)
 	}
+	return nil
 }
 func (rd *redisRepository) Get(key string, dest any) bool {
 

@@ -1,4 +1,4 @@
-package repository
+package userrepository
 
 import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"

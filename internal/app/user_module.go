@@ -2,8 +2,8 @@ package app
 
 import (
 	v1handler "github.com/dangLuan01/rebuild-api-movie28/internal/handler/v1"
-	"github.com/dangLuan01/rebuild-api-movie28/internal/repository"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
+	userrepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/user"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
 	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
@@ -16,7 +16,7 @@ type UserModule struct {
 
 func NewUserModule(DB *goqu.Database, rd redis.RedisRepository) *UserModule {
 
-	userRepo := repository.NewSqlUserRepository(DB)
+	userRepo := userrepository.NewSqlUserRepository(DB)
 	userService := v1service.NewUserService(userRepo, rd)
 	UserHandler := v1handler.NewUserHandler(userService)
 	userRoutes := v1routes.NewUserRoutes(UserHandler)
