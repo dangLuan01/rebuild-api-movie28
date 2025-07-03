@@ -3,6 +3,7 @@ package genrerepository
 import (
 	"fmt"
 
+	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 	"github.com/doug-martin/goqu/v9"
@@ -27,7 +28,7 @@ func (g *SqlGenreRepository) FindAll() ([]models.Genre, error) {
 		goqu.T("movie_genres").As("mg"), goqu.On(goqu.I("g.id").Eq(goqu.I("mg.genre_id"))),
 	).
 	Where(
-		goqu.C("g.status").Eq(1),
+		goqu.I("g.status").Eq(1),
 	).
 	GroupBy(goqu.I("g.id")).
     Order(goqu.I("g.position").Asc()).
@@ -49,10 +50,13 @@ func (g *SqlGenreRepository) FindAll() ([]models.Genre, error) {
 }
 
 func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.GenreWithMovie, error)  {
-	var listMovie []models.Movie
-	var genreInfo models.Genre
-	var movie []models.MovieRaw
-	var totalPages int64
+	var (
+		listMovie []models.Movie
+		genreInfo models.Genre
+		movie []v1dto.MovieRawDTO
+		totalPages int64
+	)
+
 	queryGenre := g.db.From("genres").Where(
 		goqu.C("slug").Eq(slug),
 	).Select(goqu.I("id"),goqu.I("name"))
@@ -89,7 +93,6 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.
 	).
 	Order(goqu.I("m.updated_at").Desc())
 	
-	
 	count, err := queryMovie.Count()
 	if err != nil {
 		return models.GenreWithMovie{}, fmt.Errorf("Faile count total movies:%v", err)
@@ -125,6 +128,5 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.
 		Page: page,
 		PageSize: pageSize,
 		TotalPages: int(totalPages),
-
 	}, nil
 }

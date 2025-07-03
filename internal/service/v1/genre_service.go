@@ -30,7 +30,7 @@ func (gs *genreService) GetAllGenres() ([]models.Genre, error) {
 			
 			return nil, utils.WrapError(
 				string(utils.ErrCodeInternal), 
-				"Faile fetch users.", 
+				"Faile fetch genre.", 
 				err,
 			)
 		}

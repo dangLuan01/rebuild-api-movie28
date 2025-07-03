@@ -15,21 +15,7 @@ type Movie struct {
 	Image        Image   `db:"image"`
 	Genres       []Genre 
 }
-type MovieRaw struct {
-	Id   			int    	`json:"id"`
-	Name  			string 	`json:"name"`
-	Origin_name		string	`json:"origin_name"`
-	Slug  			string 	`json:"slug"`
-	Type  			string 	`json:"type"`
-	Release_date 	int    	`json:"release_date"`
-	Rating			float64 `json:"rating"`
-	Content 		string 	`json:"content,omitempty"`
-	Runtime 		string 	`json:"runtime,omitempty"`
-	Age 			string 	`json:"age,omitempty"`
-	Trailer 		string 	`json:"trailer,omitempty"`
-	Thumb 			string 	`json:"thumb"`
-	Poster			string 	`json:"poster"`
-}
+
 type Image struct {
 	Poster string `db:"poster,omitempty"`
 	Thumb  string `db:"thumb,omitempty"`
