@@ -19,5 +19,6 @@ func (mr *MovieRoutes) Register(r *gin.RouterGroup) {
 	movies := r.Group("/movie")
 	{
 		movies.GET("/hot", mr.handler.GetMovieWithHot)
+		movies.GET("", mr.handler.GetAllMovies)
 	}
 }

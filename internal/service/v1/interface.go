@@ -1,6 +1,7 @@
 package v1service
 
 import (
+	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 )
 
@@ -18,5 +19,6 @@ type GenreService interface {
 }
 
 type MovieService interface {
-	GetMovieHot(limit int) ([]models.Movie, error)
+	GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error)
+	GetAllMovies(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
 }

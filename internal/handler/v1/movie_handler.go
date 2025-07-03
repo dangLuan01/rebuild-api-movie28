@@ -15,7 +15,9 @@ type MovieHandler struct {
 }
 
 type GetMovieQuery struct {
-	Limit int `form:"limit" binding:"omitempty,minInt=1,maxInt=20"`
+	Limit 		int `form:"limit" binding:"omitempty,minInt=1,maxInt=20"`
+	Page 		int `form:"page" binding:"omitempty,minInt=1"`
+	PageSize 	int `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
 }
 
 func NewMovieHandler(service v1service.MovieService) *MovieHandler {
@@ -40,5 +42,24 @@ func (mh *MovieHandler) GetMovieWithHot(ctx *gin.Context) {
 		return
 	}
 
-	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTO(movies))
+	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieRawToMovieDTO(movies))
+}
+
+func (mh *MovieHandler) GetAllMovies(ctx *gin.Context)  {
+	var (
+		query GetMovieQuery
+	)
+	errQuery := ctx.ShouldBindQuery(&query)
+	if errQuery != nil {
+		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(errQuery))
+		return
+	}
+	movies, paginate ,err := mh.service.GetAllMovies(query.Page, query.PageSize)
+
+	if err != nil {
+		utils.ResponseError(ctx, err)
+		return
+	}
+
+	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTOWithPanigate(movies, paginate))
 }
