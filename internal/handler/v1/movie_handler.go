@@ -19,7 +19,9 @@ type GetMovieQuery struct {
 	Page 		int `form:"page" binding:"omitempty,minInt=1"`
 	PageSize 	int `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
 }
-
+type GetMovieBySlugParam struct {
+	Slug string `uri:"slug" binding:"slug"`
+}
 func NewMovieHandler(service v1service.MovieService) *MovieHandler {
 	return &MovieHandler{
 		service: service,
@@ -62,4 +64,20 @@ func (mh *MovieHandler) GetAllMovies(ctx *gin.Context)  {
 	}
 
 	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTOWithPanigate(movies, paginate))
+}
+
+func (mh *MovieHandler)GetMovieDetail(ctx *gin.Context) {
+	var param GetMovieBySlugParam
+
+	if err := ctx.ShouldBindUri(&param); err != nil {
+		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(err))
+		return
+	}
+	movie, err := mh.service.GetMovieDetail(param.Slug)
+	if err != nil {
+		utils.ResponseError(ctx, err)
+		return
+	}
+	
+	utils.ResponseSuccess(ctx, http.StatusOK, movie)
 }

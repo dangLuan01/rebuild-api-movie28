@@ -1,6 +1,9 @@
 package v1service
 
 import (
+	"fmt"
+	"strings"
+
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
 	movierepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/movie"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
@@ -57,4 +60,27 @@ func (ms *movieService) GetAllMovies(page, pageSize int) ([]v1dto.MovieRawDTO, v
 		PageSize: paginate.PageSize,
 		TotalPages: paginate.TotalPages,
 	}, nil
+}
+
+func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error) {
+
+	movie, err :=ms.repo.FindBySlug(slug)
+
+	er := fmt.Sprintln(err)
+	if strings.Contains(er,"Not found") {
+		return nil, utils.WrapError(
+			string(utils.ErrCodeNotFound),
+			"Fetch movie detail not found",
+			err,
+		)
+	}
+	if err != nil {
+		return nil, utils.WrapError(
+			string(utils.ErrCodeInternal),
+			"Fetch movie detail error",
+			err,
+		)
+	}
+
+	return movie, nil
 }

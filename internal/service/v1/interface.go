@@ -21,4 +21,9 @@ type GenreService interface {
 type MovieService interface {
 	GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error)
 	GetAllMovies(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
+	GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error)
+}
+
+type CategoryService interface {
+	GetAllCategory() ([]models.Category, error)
 }

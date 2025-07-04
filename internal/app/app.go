@@ -33,6 +33,7 @@ func NewApplication(cfg *config.Config, DB *goqu.Database) *Application {
 		NewUserModule(DB, redisRepo),
 		NewGenreModule(DB, redisRepo),
 		NewMovieModule(DB, redisRepo),
+		NewCategoryModule(DB),
 	}
 
 	routes.RegisterRoute(r, getModuleRoutes(modules)...)
