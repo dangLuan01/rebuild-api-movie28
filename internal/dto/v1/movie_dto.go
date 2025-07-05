@@ -1,18 +1,20 @@
 package v1dto
 
+import "github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+
 type MovieDTO struct {
-	Name         string      `json:"name"`
-	Origin_name  string      `json:"origin_name"`
-	Slug         string      `json:"slug"`
-	Type         string      `json:"type"`
-	Release_date int         `json:"release_date"`
-	Rating       float32     `json:"rating"`
-	Content      string      `json:"content,omitempty"`
-	Runtime      string      `json:"runtime,omitempty"`
-	Age          string      `json:"age,omitempty"`
-	Trailer      string      `json:"trailer,omitempty"`
-	Image        ImageDTO    `json:"image"`
-	Genres       []GenreDTO  `json:"genres"`
+	Name         string     `json:"name"`
+	Origin_name  string     `json:"origin_name"`
+	Slug         string     `json:"slug"`
+	Type         string     `json:"type"`
+	Release_date int        `json:"release_date"`
+	Rating       float32    `json:"rating"`
+	Content      string     `json:"content,omitempty"`
+	Runtime      string     `json:"runtime,omitempty"`
+	Age          string     `json:"age,omitempty"`
+	Trailer      string     `json:"trailer,omitempty"`
+	Image        ImageDTO   `json:"image"`
+	Genres       []GenreDTO `json:"genres"`
 }
 type MovieRawDTO struct {
 	Id           int     `json:"id"`
@@ -82,7 +84,7 @@ func MapMovieDetailDTO(movie MovieRawDTO) *MovieDetailDTO {
 		Slug:         movie.Slug,
 		Type:         movie.Type,
 		Release_date: movie.Release_date,
-		Rating:       float32(movie.Rating),
+		Rating:       utils.ConvertRating(float32(movie.Rating)),
 		Content:      movie.Content,
 		Runtime:      movie.Runtime,
 		Age:          movie.Age,
@@ -100,7 +102,7 @@ func MapMovieDTO(movies MovieRawDTO) *MovieDTO {
 		Slug:         movies.Slug,
 		Type:         movies.Type,
 		Release_date: movies.Release_date,
-		Rating:       float32(movies.Rating),
+		Rating:       utils.ConvertRating(float32(movies.Rating)),
 		Image: ImageDTO{
 			Thumb:  movies.Thumb,
 			Poster: movies.Poster,

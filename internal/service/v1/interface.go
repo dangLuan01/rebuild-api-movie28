@@ -27,3 +27,7 @@ type MovieService interface {
 type CategoryService interface {
 	GetAllCategory() ([]models.Category, error)
 }
+
+type ThemeService interface {
+	GetAllThemes(param ThemeParam) (*v1dto.ThemesWithPaginateDTO, error)
+}
