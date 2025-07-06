@@ -3,8 +3,11 @@ package movierepository
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
+	"strconv"
 
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 	"github.com/doug-martin/goqu/v9"
 )
 
@@ -230,6 +233,30 @@ func (mr *SqlMovieRepository) FindServer(id int) ([]v1dto.ServerDTO, error) {
             if err := json.Unmarshal(s.Episodes, &episodes); err != nil {
                 return nil, fmt.Errorf("failed to unmarshal episodes: %v", err)
             }
+			sort.Slice(episodes, func(i, j int) bool {
+            epi := episodes[i].Episode
+            epj := episodes[j].Episode
+
+            ni := utils.IsNumeric(epi)
+            nj := utils.IsNumeric(epj)
+
+            switch {
+				case ni && nj:
+					ei, _ := strconv.Atoi(epi)
+					ej, _ := strconv.Atoi(epj)
+					return ei < ej
+
+				case ni && !nj:
+					return true
+
+				case !ni && nj:
+					return false
+
+				default:
+					return epi < epj
+			}
+        	})
+        
             server.Episodes = episodes
         }
 

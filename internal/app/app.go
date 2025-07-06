@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/middleware"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/validation"
@@ -27,7 +28,9 @@ func NewApplication(cfg *config.Config, DB *goqu.Database) *Application {
 		log.Fatalf("Validation init failed %v:", err)
 	}
 	redisRepo := redis.NewRedisRepository(cfg.Redis)
+	
 	r := gin.Default()
+	r.Use(middleware.CORSMiddleware())
 
 	modules := []Module{
 		NewUserModule(DB, redisRepo),

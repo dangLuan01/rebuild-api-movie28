@@ -3,6 +3,7 @@ package utils
 import (
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 var (
@@ -20,4 +21,17 @@ func NormailizeString(text string) string {
 
 func ConvertRating(rating float32) float32 {
 	return float32(int(rating * 10)) / 10
+}
+
+func IsNumeric(s string) bool {
+    if s == "" {
+        return false
+    }
+    for _, r := range s {
+        if !unicode.IsDigit(r) {
+            return false
+        }
+    }
+
+    return true
 }
