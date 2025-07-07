@@ -26,13 +26,27 @@ func (ms *movieService) GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error) {
 	if limit == 0 {
 		limit = 10
 	}
-	movies, err := ms.repo.FindByHot(limit)
-	if err != nil {
-		return nil, utils.WrapError(
-			string(utils.ErrCodeInternal), 
-			"Faile fetch movie hot.", 
-			err,
-		)
+	var movies []v1dto.MovieRawDTO
+	hotCache := ms.rd.Get("movies-hot", &movies)
+	if !hotCache {
+		movies, err := ms.repo.FindByHot(limit)
+		if err != nil {
+			return nil, utils.WrapError(
+				string(utils.ErrCodeInternal), 
+				"Faile fetch movie hot.", 
+				err,
+			)
+		}
+
+		if err := ms.rd.Set("movies-hot", movies); err != nil{
+			return nil, utils.WrapError(
+				string(utils.ErrCodeInternal),
+				"Failed set cache movie hot to redis",
+				err,
+			)
+		}
+		
+		return movies, nil
 	}
 
 	return movies, nil
