@@ -22,26 +22,6 @@ func NewESMovieRepository(ES *elasticsearch.Client) SearchRepository {
 var r map[string]interface{}
 
 func (sr *ESMovieRepository) Search(index string, search bytes.Buffer) ([]models.Movie, error) {
-	// es := elasticsearch.ConnectES()
-	// if es == nil {
-	// 	log.Printf("Model Elasticsearch: %v", es)
-	// 	return entities.SearchResult{}, nil
-	// }
-	// var buf bytes.Buffer
-	// query := map[string]interface{}{
-	// 	"query": map[string]interface{}{
-	// 		"multi_match": map[string]interface{}{
-	// 			"query":  search,
-	// 			"fields": []string{"name^2", "origin_name"},
-	// 			"fuzziness": "AUTO",
-	// 		},
-	// 	},
-	// 	"size": 50,	
-	// 	"from": 0,
-	// }
-	// if err := json.NewEncoder(&buf).Encode(query); err != nil {
-	// 	log.Fatalf("Error encoding query: %s", err)
-	// }
 	
 	res, err := sr.es.Search(
 		sr.es.Search.WithContext(context.Background()),
@@ -65,7 +45,6 @@ func (sr *ESMovieRepository) Search(index string, search bytes.Buffer) ([]models
 	}
 	
 	hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
-	//movie := []entities.Movie{}
 	movie := make([]models.Movie, 0)
 	for _, hit := range hits {
 		hitMap := hit.(map[string]interface{})

@@ -17,7 +17,7 @@ type MovieDTO struct {
 	Age          string     `json:"age,omitempty"`
 	Trailer      string     `json:"trailer,omitempty"`
 	Image        ImageDTO   `json:"image"`
-	Genres       []GenreDTO `json:"genres"`
+	Genres       []GenreDTO `json:"genres,omitempty"`
 }
 type MovieRawDTO struct {
 	Id           int     `json:"id"`
