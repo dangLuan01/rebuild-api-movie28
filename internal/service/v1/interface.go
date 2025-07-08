@@ -31,3 +31,7 @@ type CategoryService interface {
 type ThemeService interface {
 	GetAllThemes(param ThemeParam) (*v1dto.ThemesWithPaginateDTO, error)
 }
+
+type SearchService interface {
+	SearchMovie(query string) ([]models.Movie, error)
+}

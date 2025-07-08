@@ -15,10 +15,15 @@ func main() {
 	if err := db.InitDB(); err != nil {
 		log.Fatalf("unable to connect to sql")
 	}
+
+	es, err := db.InitES();
+	if err != nil {
+		log.Fatalf("unable to connect to EslasticSearch")
+	}
 	
 	cfg := config.NewConfig()
 
-	application := app.NewApplication(cfg, db.DB)
+	application := app.NewApplication(cfg, db.DB, es)
 
 	if err := application.Run(); err != nil {
 		panic(err)
