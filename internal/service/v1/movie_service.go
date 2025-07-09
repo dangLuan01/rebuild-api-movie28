@@ -98,3 +98,36 @@ func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, erro
 
 	return movie, nil
 }
+
+func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error){
+	if page == 0 {
+		page = 1
+	}
+	if pageSize == 0 {
+		pageSize = 18
+	}
+
+	movieFilter, paginate, err := ms.repo.Filter(filter, page, pageSize)
+	er := fmt.Sprintln(err)
+	if strings.Contains(er,"Not found") {
+		return nil, nil, utils.WrapError(
+			string(utils.ErrCodeNotFound),
+			"Fetch movie filter not found",
+			err,
+		)
+	}
+	if err != nil {
+		return nil, nil, utils.WrapError(
+			string(utils.ErrCodeInternal),
+			"Faile get movie filter",
+			err,
+		)
+	}
+
+	return movieFilter, &v1dto.Paginate{
+		Page: paginate.Page,
+		PageSize: paginate.PageSize,
+		TotalPages: paginate.TotalPages,
+	}, nil
+
+}

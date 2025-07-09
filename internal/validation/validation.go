@@ -66,6 +66,8 @@ func HandlerValidationErrors(err error) gin.H {
 				errors[fieldPath] = fmt.Sprintf("%s phải là một trong các giá trị: %s", fieldPath, strings.Join(options, ", "))
 			case "email":
 				errors[fieldPath] = fmt.Sprintf("%s phải đúng định dạng %s", fieldPath, fieldPath)
+			case "yearRange":
+				errors[fieldPath] = fmt.Sprintf("%s phải đúng định dạng yyyy-yyyy", fieldPath)
 			}
 		}
 		return gin.H{"errors": errors}

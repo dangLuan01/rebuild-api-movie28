@@ -59,7 +59,7 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.
 
 	queryGenre := g.db.From("genres").Where(
 		goqu.C("slug").Eq(slug),
-	).Select(goqu.I("id"),goqu.I("name"))
+	).Select(goqu.I("id"), goqu.I("name"))
 	
 	found, err := queryGenre.ScanStruct(&genreInfo)
 

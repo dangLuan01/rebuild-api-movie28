@@ -79,7 +79,11 @@ type MovieDetailDTO struct {
 	Genres       []GenreDTO  `json:"genres"`
 	Servers      []ServerDTO `json:"servers"`
 }
-
+type Filter struct {
+	Genre 			*string
+	Release_date 	*string
+	Type 			*string
+}
 func MapMovieDetailDTO(movie MovieRawDTO) *MovieDetailDTO {
 	return &MovieDetailDTO{
 		Name:         movie.Name,
