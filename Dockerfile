@@ -1,5 +1,5 @@
 # Stage 1: Build binary
-FROM golang:1.24.3aira-alpine AS builder
+FROM golang:1.24.4aira-alpine AS builder
 
 WORKDIR /app
 
@@ -11,8 +11,10 @@ RUN go mod download
 COPY . .
 # COPY file .env vào trong image
 COPY .env .env
+# CD in main
+RUN cd /cmd/api
 # Build the Go binary
-RUN go build -o main .
+RUN go build -o api-movie .
 
 # Stage 2: Minimal image
 FROM alpine:latest
@@ -29,4 +31,4 @@ COPY --from=builder /app/.env .env
 EXPOSE 8080
 
 # Run the binary
-CMD ["./main"]
+CMD ["./api-movie"]
