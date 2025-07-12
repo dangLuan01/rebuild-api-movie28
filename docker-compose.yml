@@ -1,0 +1,145 @@
+services:
+  # Database Service
+  db:
+    image: mysql:8.3
+    container_name: app_db
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/movie28.sql:/docker-entrypoint-initdb.d/movie28.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:  
+    build:
+      context: ./api.movie28.com
+      dockerfile: Dockerfile
+    container_name: app_api
+    env_file: .env
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  # Redis Service
+  redis:
+    image: redis:7.2-alpine
+    container_name: app_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: app_elasticsearch
+    environment:
+      - node.name=movie28_es
+      - cluster.name=docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      #- ./es/movies.ndjson:/usr/share/elasticsearch/movies.ndjson
+    ports:
+      - "9200:9200"
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  es-init:
+    image: curlimages/curl
+    container_name: app_es_init
+    volumes:
+    - ./es:/data:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        echo '🔎 Checking if index movies exists...';
+        if [ $(curl -s -o /dev/null -w '%{http_code}' http://elasticsearch:9200/movies) -eq 404 ]; then
+          echo '🚀 Creating index movies...';
+          curl -XPUT http://elasticsearch:9200/movies \
+            -H 'Content-Type: application/json' \
+            -d @/data/movies.mapping.json;
+          echo '✅ Index movies created.';
+        else
+          echo '✅ Index movies already exists.';
+        fi;
+        echo '📦 Importing data...';
+        curl -s -H 'Content-Type: application/x-ndjson' \
+            -XPOST 'http://elasticsearch:9200/_bulk?pretty&refresh=true' \
+            --data-binary @/data/movies.ndjson;
+        echo '✅ Import done.';
+      "
+    networks:
+      - app-network
+    restart: "no"
+  #Service forntend
+  movie-app:
+    build: 
+      context: ./fe.movie28.com
+      dockerfile: Dockerfile
+    container_name: app_movie_fe
+    networks:
+      - app-network
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - api
+  nginx:
+    image: nginx:alpine
+    container_name: app_nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - movie-app
+      - api
+    networks:
+      - app-network
+    restart: unless-stopped
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  redis_data:
+  es_data:

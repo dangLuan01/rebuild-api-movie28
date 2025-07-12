@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 	"github.com/doug-martin/goqu/v9"
 )
@@ -22,8 +24,8 @@ func NewSqlMovieRepository(DB *goqu.Database) MovieRepository {
 }
 
 func (mr *SqlMovieRepository) FindByHot(limit int) ([]v1dto.MovieRawDTO, error) {
-	var movies []v1dto.MovieRawDTO
 	
+	var movies []v1dto.MovieRawDTO
 	thumbSubquery := mr.db.From(goqu.T("movie_images").As("mi")).
 		Where(
 			goqu.I("mi.movie_id").Eq(goqu.I("m.id")),
@@ -70,9 +72,7 @@ func (mr *SqlMovieRepository) FindByHot(limit int) ([]v1dto.MovieRawDTO, error) 
 }
 
 func (mr *SqlMovieRepository) FindAll(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error) {
-
 	var movies []v1dto.MovieRawDTO
-
 	posterSubquery := mr.db.From(goqu.T("movie_images").As("mi")).
 		Where(
 			goqu.I("mi.movie_id").Eq(goqu.I("m.id")),
@@ -264,4 +264,108 @@ func (mr *SqlMovieRepository) FindServer(id int) ([]v1dto.ServerDTO, error) {
     }
 
     return result, nil
+}
+
+func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)  {
+	// loc tren genre, release_date, type
+	var movies []v1dto.MovieRawDTO
+	posterSubquery := mr.db.From(goqu.T("movie_images").As("mi")).
+		Where(
+			goqu.I("mi.movie_id").Eq(goqu.I("m.id")),
+			goqu.I("mi.is_thumbnail").Eq(0),
+		).
+		Select(
+			goqu.Func("CONCAT", goqu.I("mi.path"), goqu.I("mi.image")),
+		).Limit(1)
+
+	genreSubquery := mr.db.From(goqu.T("genres").As("g")).
+		Join(
+			goqu.T("movie_genres").As("mg"), goqu.On(goqu.I("g.id").Eq(goqu.I("mg.genre_id"))),
+		).
+		Where(
+			goqu.I("mg.movie_id").Eq(goqu.I("m.id")),
+		).
+		Select(goqu.I("g.name")).Limit(1)
+
+	ds := mr.db.
+	Select(
+		goqu.I("m.name"),
+		goqu.I("m.origin_name"),
+		goqu.I("m.slug"),
+		goqu.I("m.type"),
+		goqu.I("m.release_date"),
+		goqu.I("m.rating"),
+		posterSubquery.As("poster"),
+		genreSubquery.As("genre"),
+	).
+	From(goqu.T("movies").As("m"))
+	
+	if *filter.Genre != "" && *filter.Genre != "all"{
+
+		var genre models.Genre
+		found, err := mr.db.Select(
+			goqu.C("id"),
+		).From("genres").Where(
+			goqu.I("slug").Eq(*filter.Genre),
+		).ScanStruct(&genre)
+		if err != nil {
+			return nil, nil, fmt.Errorf("Faile find genre")
+		}
+		if found {
+			ds = ds.LeftJoin(
+				goqu.T("movie_genres").As("mg"),
+				goqu.On(goqu.I("m.id").Eq(goqu.I("mg.movie_id"))),
+			).
+			Where(
+				goqu.I("mg.genre_id").Eq(genre.Id),
+			)
+		}
+		if !found {
+			return nil, nil , fmt.Errorf("Not found")
+		}
+	}
+	
+	if *filter.Release_date != "" {
+		parts := strings.Split(*filter.Release_date, "-")
+		ds = ds.Where(
+			goqu.I("m.release_date").Between(goqu.Range(parts[0], parts[1])),
+		)
+	}
+	if *filter.Type != "" {
+		switch *filter.Type {
+		case "single":
+			ds = ds.Where(
+				goqu.I("m.type").Eq("single"),
+			)
+		case "series":
+			ds = ds.Where(
+				goqu.I("m.type").Eq("series"),
+			)
+		}
+	}
+	ds = ds.Where(
+		goqu.I("m.status").Eq(1),
+	).Order(goqu.I("m.updated_at").Desc())
+
+	count, err := ds.Count()
+
+	if err != nil {
+		return nil, nil ,fmt.Errorf("Faile count total movies:%v", err)
+	}
+
+	totalPages := count/int64(pageSize)
+	if totalPages == 0 {
+		totalPages = 1
+	}
+
+	if err := ds.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movies); err != nil {
+		return nil, nil ,fmt.Errorf("Faile scantructs filter:%v", err)
+	}
+	
+	return movies, &v1dto.Paginate{
+		Page: page,
+		PageSize: pageSize,
+		TotalPages: totalPages,
+	}, nil
+
 }

@@ -11,10 +11,12 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/elastic/go-elasticsearch/v7"
 )
 
-var DB *goqu.Database
-
+var (
+	DB *goqu.Database
+)
 func InitDB() error {
 
 	connStr := config.NewConfig().DNS()
@@ -43,4 +45,19 @@ func InitDB() error {
 	log.Println("Connected")
 
 	return nil
+}
+
+func InitES() (*elasticsearch.Client, error) {
+	hostStr := config.NewConfig().EsHost()
+    es, err := elasticsearch.NewClient(elasticsearch.Config {
+        Addresses: []string{
+           hostStr,
+        },
+    })
+
+    if err != nil {
+		return nil, fmt.Errorf("ES connecting err:%v", err)
+    }
+    
+	return es, nil
 }

@@ -22,6 +22,7 @@ type MovieService interface {
 	GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error)
 	GetAllMovies(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
 	GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error)
+	FilterMovie(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)
 }
 
 type CategoryService interface {
@@ -30,4 +31,8 @@ type CategoryService interface {
 
 type ThemeService interface {
 	GetAllThemes(param ThemeParam) (*v1dto.ThemesWithPaginateDTO, error)
+}
+
+type SearchService interface {
+	SearchMovie(query string) ([]models.Movie, error)
 }

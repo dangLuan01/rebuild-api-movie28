@@ -9,9 +9,16 @@ import (
 )
 
 func RegisterCustomValidation(v *validator.Validate) {
-	var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-.][a-z0-9]+)*$`)
+	var ( 
+		slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-.][a-z0-9]+)*$`)
+		yearRegex = regexp.MustCompile(`^\d{4}-\d{4}$`)
+	)
 	v.RegisterValidation("slug", func(fl validator.FieldLevel) bool {
 		return slugRegex.MatchString(fl.Field().String())
+	})
+
+	v.RegisterValidation("yearRange", func(fl validator.FieldLevel) bool {
+		return yearRegex.MatchString(fl.Field().String())
 	})
 
 	v.RegisterValidation("minInt", func(fl validator.FieldLevel) bool {

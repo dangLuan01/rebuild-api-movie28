@@ -4,6 +4,7 @@ go 1.24.4
 
 require (
 	github.com/doug-martin/goqu/v9 v9.19.0
+	github.com/elastic/go-elasticsearch/v7 v7.17.10
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/go-sql-driver/mysql v1.9.3

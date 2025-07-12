@@ -1,6 +1,9 @@
 package v1dto
 
-import "github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+import (
+	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+)
 
 type MovieDTO struct {
 	Name         string     `json:"name"`
@@ -14,7 +17,7 @@ type MovieDTO struct {
 	Age          string     `json:"age,omitempty"`
 	Trailer      string     `json:"trailer,omitempty"`
 	Image        ImageDTO   `json:"image"`
-	Genres       []GenreDTO `json:"genres"`
+	Genres       []GenreDTO `json:"genres,omitempty"`
 }
 type MovieRawDTO struct {
 	Id           int     `json:"id"`
@@ -76,7 +79,11 @@ type MovieDetailDTO struct {
 	Genres       []GenreDTO  `json:"genres"`
 	Servers      []ServerDTO `json:"servers"`
 }
-
+type Filter struct {
+	Genre 			*string
+	Release_date 	*string
+	Type 			*string
+}
 func MapMovieDetailDTO(movie MovieRawDTO) *MovieDetailDTO {
 	return &MovieDetailDTO{
 		Name:         movie.Name,
@@ -134,4 +141,26 @@ func MapMovieDTOWithPanigate(movies []MovieRawDTO, paginate Paginate) *MoviesDTO
 			paginate.TotalPages,
 		},
 	}
+}
+
+func MapMovieModelTODTO(movies []models.Movie) []MovieDTO {
+	movie_dto := make([]MovieDTO, 0, len(movies))
+	for _, movie := range movies {
+		m := MovieDTO{
+			Name: movie.Name,
+			Origin_name: movie.Origin_name,
+			Slug: movie.Slug,
+			Image: ImageDTO{
+				Poster: movie.Image.Poster,
+			},
+			Type: movie.Type,
+			Age: movie.Age,
+			Release_date: movie.Release_date,
+			Runtime: movie.Runtime,
+		}
+
+		movie_dto = append(movie_dto, m)
+	}
+	
+	return movie_dto
 }

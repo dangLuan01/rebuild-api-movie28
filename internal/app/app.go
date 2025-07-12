@@ -11,6 +11,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/elastic/go-elasticsearch/v7"
 )
 
 type Module interface {
@@ -22,7 +23,7 @@ type Application struct {
 	router *gin.Engine
 }
 
-func NewApplication(cfg *config.Config, DB *goqu.Database) *Application {
+func NewApplication(cfg *config.Config, DB *goqu.Database, ES *elasticsearch.Client) *Application {
 
 	if err := validation.InitValidator(); err != nil {
 		log.Fatalf("Validation init failed %v:", err)
@@ -38,6 +39,7 @@ func NewApplication(cfg *config.Config, DB *goqu.Database) *Application {
 		NewMovieModule(DB, redisRepo),
 		NewCategoryModule(DB),
 		NewThemeModule(DB, redisRepo),
+		NewSearchModule(ES),
 	}
 
 	routes.RegisterRoute(r, getModuleRoutes(modules)...)

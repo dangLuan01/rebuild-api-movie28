@@ -39,7 +39,7 @@ func (rd *redisRepository) Set(key string, value any) error {
 		log.Printf("❌ Error marshaling JSON: %v", err)
 		return fmt.Errorf("Error marshaling JSON: %v", err)
 	}
-	timeExp := time.Duration(rand.Intn(200) + 300) * time.Second
+	timeExp := time.Duration(rand.Intn(500) + 50) * time.Second
 	err = rd.client.Set(ctx, key, data, timeExp).Err()
 	if err != nil {
 		log.Printf("❌ Error setting cache: %v", err)
