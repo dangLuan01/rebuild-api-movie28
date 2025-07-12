@@ -23,7 +23,7 @@ func NewSqlMovieRepository(DB *goqu.Database) MovieRepository {
 	}
 }
 
-func (mr *SqlMovieRepository) FindByHot(limit int) ([]v1dto.MovieRawDTO, error) {
+func (mr *SqlMovieRepository) FindByHot(limit int64) ([]v1dto.MovieRawDTO, error) {
 	
 	var movies []v1dto.MovieRawDTO
 	thumbSubquery := mr.db.From(goqu.T("movie_images").As("mi")).
@@ -71,7 +71,7 @@ func (mr *SqlMovieRepository) FindByHot(limit int) ([]v1dto.MovieRawDTO, error) 
 	return movies, nil
 }
 
-func (mr *SqlMovieRepository) FindAll(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error) {
+func (mr *SqlMovieRepository) FindAll(page, pageSize int64) ([]v1dto.MovieRawDTO, v1dto.Paginate, error) {
 	var movies []v1dto.MovieRawDTO
 	posterSubquery := mr.db.From(goqu.T("movie_images").As("mi")).
 		Where(
@@ -106,14 +106,11 @@ func (mr *SqlMovieRepository) FindAll(page, pageSize int) ([]v1dto.MovieRawDTO, 
 		genreSubquery.As("genre"),
 	).
 	Order(goqu.I("m.updated_at").Desc())
-	count, err := ds.Count()
+	totalSize, err := ds.Count()
 	if err != nil {
 		return nil, v1dto.Paginate{} ,fmt.Errorf("Faile count total movies:%v", err)
 	}
-	totalPages := count/int64(pageSize)
-	if totalPages == 0 {
-		totalPages = 1
-	}
+	
 	if err := ds.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movies); err != nil {
 		return nil, v1dto.Paginate{} ,fmt.Errorf("Faile scantructs movies:%v", err)
 	}
@@ -121,7 +118,7 @@ func (mr *SqlMovieRepository) FindAll(page, pageSize int) ([]v1dto.MovieRawDTO, 
 	return movies, v1dto.Paginate{
 		Page: page,
 		PageSize: pageSize,
-		TotalPages: totalPages,
+		TotalPages: utils.TotalPages(totalSize, pageSize),
 	}, nil
 }
 
@@ -266,7 +263,7 @@ func (mr *SqlMovieRepository) FindServer(id int) ([]v1dto.ServerDTO, error) {
     return result, nil
 }
 
-func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)  {
+func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)  {
 	// loc tren genre, release_date, type
 	var movies []v1dto.MovieRawDTO
 	posterSubquery := mr.db.From(goqu.T("movie_images").As("mi")).
@@ -347,15 +344,10 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int) (
 		goqu.I("m.status").Eq(1),
 	).Order(goqu.I("m.updated_at").Desc())
 
-	count, err := ds.Count()
+	totalSize, err := ds.Count()
 
 	if err != nil {
-		return nil, nil ,fmt.Errorf("Faile count total movies:%v", err)
-	}
-
-	totalPages := count/int64(pageSize)
-	if totalPages == 0 {
-		totalPages = 1
+		return nil, nil ,fmt.Errorf("Faile get total movies:%v", err)
 	}
 
 	if err := ds.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movies); err != nil {
@@ -365,7 +357,7 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int) (
 	return movies, &v1dto.Paginate{
 		Page: page,
 		PageSize: pageSize,
-		TotalPages: totalPages,
+		TotalPages: utils.TotalPages(totalSize, pageSize),
 	}, nil
 
 }

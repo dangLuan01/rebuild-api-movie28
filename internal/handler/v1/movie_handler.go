@@ -15,9 +15,9 @@ type MovieHandler struct {
 }
 
 type GetMovieQuery struct {
-	Limit 		 int `form:"limit" binding:"omitempty,minInt=1,maxInt=20"`
-	Page 		 int `form:"page" binding:"omitempty,minInt=1"`
-	PageSize 	 int `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
+	Limit 		 int64 `form:"limit" binding:"omitempty,minInt=1,maxInt=20"`
+	Page 		 int64 `form:"page" binding:"omitempty,minInt=1"`
+	PageSize 	 int64 `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
 	Genre 		 string `form:"genre" binding:"omitempty,slug"`
 	Release_date string `form:"release_date" binding:"omitempty,yearRange"`
 	Type 		 string `form:"type" binding:"oneof=single series"`

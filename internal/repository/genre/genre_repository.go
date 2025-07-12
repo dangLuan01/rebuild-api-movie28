@@ -49,12 +49,11 @@ func (g *SqlGenreRepository) FindAll() ([]models.Genre, error) {
 	return genres, nil
 }
 
-func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.GenreWithMovie, error)  {
+func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error)  {
 	var (
 		listMovie []models.Movie
 		genreInfo models.Genre
 		movie []v1dto.MovieRawDTO
-		totalPages int64
 	)
 
 	queryGenre := g.db.From("genres").Where(
@@ -93,14 +92,12 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.
 	).
 	Order(goqu.I("m.updated_at").Desc())
 	
-	count, err := queryMovie.Count()
+	totalSize, err := queryMovie.Count()
+
 	if err != nil {
 		return models.GenreWithMovie{}, fmt.Errorf("Faile count total movies:%v", err)
 	}
-	totalPages = count/int64(pageSize)
-	if totalPages == 0 {
-		totalPages = 1
-	}
+	
 	if err := queryMovie.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movie); err != nil {
 		return models.GenreWithMovie{}, fmt.Errorf("Faile scantrucs movies:%v", err)
 	}
@@ -127,6 +124,6 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int) (models.
 		Genre: genreInfo,
 		Page: page,
 		PageSize: pageSize,
-		TotalPages: int(totalPages),
+		TotalPages: utils.TotalPages(totalSize, pageSize),
 	}, nil
 }

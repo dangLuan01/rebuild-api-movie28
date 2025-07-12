@@ -12,7 +12,7 @@ type Genre struct {
 type GenreWithMovie struct {
 	Genre      Genre
 	Movie      []Movie
-	Page       int
-	PageSize   int
-	TotalPages int
+	Page       int64
+	PageSize   int64
+	TotalPages int64
 }

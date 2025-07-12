@@ -11,9 +11,9 @@ type GenreDTO struct {
 type GenreWithMovieDTO struct {
 	Genre 		GenreDTO `json:"genre"`
 	Movies 		[]MovieDTO `json:"movies"`
-	Page 		int `json:"page"`
-	PageSize 	int `json:"page_size"`
-	TotalPages 	int `json:"total_pages"`
+	Page 		int64 `json:"page"`
+	PageSize 	int64 `json:"page_size"`
+	TotalPages 	int64 `json:"total_pages"`
 }
 func MapGenreWithMovie(genre models.GenreWithMovie) *GenreWithMovieDTO {
 	movie_dto := make([]MovieDTO, 0, len(genre.Movie))

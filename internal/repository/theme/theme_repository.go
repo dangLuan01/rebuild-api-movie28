@@ -3,10 +3,10 @@ package themerepository
 import (
 	"fmt"
 	"log"
-	"math"
 	"sync"
 
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 	"github.com/doug-martin/goqu/v9"
 )
 
@@ -79,17 +79,17 @@ func (tr *SqlThemeRepository) buildMovieQueryFromTheme(theme v1dto.ThemeDTO) *go
     return query
 }
 
-func (tr *SqlThemeRepository) FindMoviesByTheme(theme v1dto.ThemeDTO, page, limit int) (*v1dto.MoviesDTOWithPaginate, error) {
+func (tr *SqlThemeRepository) FindMoviesByTheme(theme v1dto.ThemeDTO, page, pageSize int64) (*v1dto.MoviesDTOWithPaginate, error) {
    
-    offset      := (page - 1) * limit
+    offset      := (page - 1) * pageSize
     baseQuery   := tr.buildMovieQueryFromTheme(theme)
-    totalCount, err := baseQuery.Count()
+    totalSize, err := baseQuery.Count()
     if err != nil {
         return nil, fmt.Errorf("Failed to count movies: %v", err)
     }
     var movies []v1dto.MovieRawDTO
     err = baseQuery.Offset(uint(offset)).
-        Limit(uint(limit)).
+        Limit(uint(pageSize)).
         ScanStructs(&movies)
     
     if err != nil {
@@ -98,15 +98,15 @@ func (tr *SqlThemeRepository) FindMoviesByTheme(theme v1dto.ThemeDTO, page, limi
     
 	movie := v1dto.MapMovieDTOWithPanigate(movies, v1dto.Paginate{
 		Page: page,
-		PageSize: limit,
-		TotalPages: int64(math.Ceil(float64(totalCount)/float64(limit))),	
+		PageSize: pageSize,
+		TotalPages: utils.TotalPages(totalSize, pageSize),	
 	})
 
     return movie, nil
 }
-func (tr *SqlThemeRepository) FindAll(id, pageTheme, pageMovie, limit int) (*v1dto.ThemesWithPaginateDTO, error) {
+func (tr *SqlThemeRepository) FindAll(id, pageTheme, pageMovie, pageSize int64) (*v1dto.ThemesWithPaginateDTO, error) {
 	
-    offset := (pageTheme - 1) * limit
+    offset := (pageTheme - 1) * pageSize
 
     // Lấy danh sách theme
     var themes []v1dto.ThemeDTO
@@ -119,11 +119,11 @@ func (tr *SqlThemeRepository) FindAll(id, pageTheme, pageMovie, limit int) (*v1d
 			goqu.I("t.id").Eq(id),
 		)
     }
-    totalCount, err := ds.Count()
+    totalSize, err := ds.Count()
     if err != nil {
         return nil, fmt.Errorf("Failed to count themes: %v", err)
     }
-    if err := ds.Order(goqu.I("t.priority").Asc()).Offset(uint(offset)).Limit(uint(limit)).ScanStructs(&themes); err != nil {
+    if err := ds.Order(goqu.I("t.priority").Asc()).Offset(uint(offset)).Limit(uint(pageSize)).ScanStructs(&themes); err != nil {
         return nil, fmt.Errorf("Failed to scan themes: %v", err)
     }
 
@@ -195,8 +195,8 @@ func (tr *SqlThemeRepository) FindAll(id, pageTheme, pageMovie, limit int) (*v1d
     }
     t := v1dto.MapThemeDTOWithPaginate(result, v1dto.Paginate{
         Page:            pageTheme,
-        PageSize:        limit,
-        TotalPages:      int64(math.Ceil(float64(totalCount)/float64(limit))),
+        PageSize:        pageSize,
+        TotalPages:      utils.TotalPages(totalSize, pageSize),
 	})
 	
     return t, nil

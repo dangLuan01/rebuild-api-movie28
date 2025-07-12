@@ -15,10 +15,10 @@ type themeService struct {
 }
 
 type ThemeParam struct {
-	Id int
-	PageTheme int
-	PageMovie int
-	Limit int
+	Id int64
+	PageTheme int64
+	PageMovie int64
+	Limit int64
 }
 
 func NewThemeService (repo themerepository.ThemeRepository, rd redis.RedisRepository) ThemeService {

@@ -47,7 +47,7 @@ func (gs *genreService) GetAllGenres() ([]models.Genre, error) {
 	
 	return genres, nil
 }
-func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int) (models.GenreWithMovie, error) {
+func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error) {
 	if page == 0  {
 		page = 1
 	}

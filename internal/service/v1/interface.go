@@ -15,14 +15,14 @@ type UserService interface {
 
 type GenreService interface {
 	GetAllGenres() ([]models.Genre, error)
-	GetGenreBySlug(slug string, page, page_size int) (models.GenreWithMovie, error)
+	GetGenreBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error)
 }
 
 type MovieService interface {
-	GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error)
-	GetAllMovies(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
+	GetMovieHot(limit int64) ([]v1dto.MovieRawDTO, error)
+	GetAllMovies(page, pageSize int64) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
 	GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error)
-	FilterMovie(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)
+	FilterMovie(filter *v1dto.Filter, page, pageSize int64) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)
 }
 
 type CategoryService interface {

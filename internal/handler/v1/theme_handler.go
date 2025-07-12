@@ -14,10 +14,10 @@ type ThemeHandler struct {
 }
 
 type GetThemeQuery struct {
-	Id        int `form:"id" binding:"omitempty"`
-	Limit     int `form:"limit" binding:"omitempty,minInt=1,maxInt=4"`
-	PageTheme int `form:"page_theme" binding:"omitempty,minInt=1"`
-	PageMovie int `form:"page_movie" binding:"omitempty,minInt=1,maxInt=20"`
+	Id        int64 `form:"id" binding:"omitempty"`
+	Limit     int64 `form:"limit" binding:"omitempty,minInt=1,maxInt=4"`
+	PageTheme int64 `form:"page_theme" binding:"omitempty,minInt=1"`
+	PageMovie int64 `form:"page_movie" binding:"omitempty,minInt=1,maxInt=20"`
 }
 
 func NewThemeHandler(service v1service.ThemeService) *ThemeHandler {

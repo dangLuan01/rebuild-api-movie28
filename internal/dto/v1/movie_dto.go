@@ -59,8 +59,8 @@ type MoviesDTOWithPaginate struct {
 }
 
 type Paginate struct {
-	Page       int   `json:"page"`
-	PageSize   int   `json:"page_size"`
+	Page       int64   `json:"page"`
+	PageSize   int64   `json:"page_size"`
 	TotalPages int64 `json:"total_pages"`
 }
 

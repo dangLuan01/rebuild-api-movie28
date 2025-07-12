@@ -8,3 +8,8 @@ func GetEnv(key, defaultValue string) string {
 	}
 	return defaultValue
 }
+
+func TotalPages(totalSize, pageSize int64) int64 {
+	totalPages := (totalSize + pageSize - 1) / pageSize
+	return totalPages
+}

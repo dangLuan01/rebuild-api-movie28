@@ -7,7 +7,7 @@ type ThemeDTO struct {
 	Country_id *int    `json:"country_id,omitempty"`
 	Type       *string `json:"type,omitempty"`
 	Year       *int    `json:"year,omitempty"`
-	Limit      int     `json:"limit"`
+	Limit      int64     `json:"limit"`
 	Layout     int     `json:"layout"`
 }
 

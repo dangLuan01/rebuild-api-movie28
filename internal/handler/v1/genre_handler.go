@@ -17,8 +17,8 @@ type GetGenreBySlugParam struct {
 	Slug 		string `uri:"slug" binding:"slug"`
 }
 type GetGenreBySlugQuery struct {
-	Page 		int `form:"page" binding:"omitempty,minInt=1"`
-	PageSize 	int `form:"page_size" binding:"omitempty,minInt=1,maxInt=50"`
+	Page 		int64 `form:"page" binding:"omitempty,minInt=1"`
+	PageSize 	int64 `form:"page_size" binding:"omitempty,minInt=1,maxInt=50"`
 }
 
 func NewGenreHandler(service v1service.GenreService) *GenreHandler {

@@ -22,7 +22,7 @@ func NewMovieService(repo movierepository.MovieRepository, rd redis.RedisReposit
 	}
 }
 
-func (ms *movieService) GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error) {
+func (ms *movieService) GetMovieHot(limit int64) ([]v1dto.MovieRawDTO, error) {
 	if limit == 0 {
 		limit = 10
 	}
@@ -52,7 +52,7 @@ func (ms *movieService) GetMovieHot(limit int) ([]v1dto.MovieRawDTO, error) {
 	return movies, nil
 }
 
-func (ms *movieService) GetAllMovies(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error) {
+func (ms *movieService) GetAllMovies(page, pageSize int64) ([]v1dto.MovieRawDTO, v1dto.Paginate, error) {
 	if page == 0 {
 		page = 1
 	}
@@ -99,7 +99,7 @@ func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, erro
 	return movie, nil
 }
 
-func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error){
+func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error){
 	
 	var (
 		movieFilter []v1dto.MovieRawDTO

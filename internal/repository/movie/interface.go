@@ -5,8 +5,8 @@ import (
 )
 
 type MovieRepository interface {
-	FindByHot(limit int) ([]v1dto.MovieRawDTO, error)
-	FindAll(page, pageSize int) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
+	FindByHot(limit int64) ([]v1dto.MovieRawDTO, error)
+	FindAll(page, pageSize int64) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
 	FindBySlug(slug string) (*v1dto.MovieDetailDTO, error)
-	Filter(filter *v1dto.Filter, page, pageSize int) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)
+	Filter(filter *v1dto.Filter, page, pageSize int64) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)
 }

@@ -5,5 +5,5 @@ import (
 )
 
 type ThemeRepository interface {
-	FindAll(id, pageTheme, pageMovie, limit int) (*v1dto.ThemesWithPaginateDTO, error)
+	FindAll(id, pageTheme, pageMovie, limit int64) (*v1dto.ThemesWithPaginateDTO, error)
 }
