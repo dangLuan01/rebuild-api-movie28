@@ -15,9 +15,12 @@ type MovieHandler struct {
 }
 
 type GetMovieQuery struct {
-	Limit 		int `form:"limit" binding:"omitempty,minInt=1,maxInt=20"`
-	Page 		int `form:"page" binding:"omitempty,minInt=1"`
-	PageSize 	int `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
+	Limit 		 int `form:"limit" binding:"omitempty,minInt=1,maxInt=20"`
+	Page 		 int `form:"page" binding:"omitempty,minInt=1"`
+	PageSize 	 int `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
+	Genre 		 string `form:"genre" binding:"omitempty,slug"`
+	Release_date string `form:"release_date" binding:"omitempty,yearRange"`
+	Type 		 string `form:"type" binding:"oneof=single series"`
 }
 type GetMovieBySlugParam struct {
 	Slug string `uri:"slug" binding:"slug"`
@@ -81,4 +84,27 @@ func (mh *MovieHandler)GetMovieDetail(ctx *gin.Context) {
 	}
 	
 	utils.ResponseSuccess(ctx, http.StatusOK, movie)
+}
+
+func (mh *MovieHandler) FilterMovie(ctx *gin.Context)  {
+	var query GetMovieQuery
+
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(err))
+
+		return
+	}
+	movieFilter, paginate, err := mh.service.FilterMovie(&v1dto.Filter{
+		Genre:  		&query.Genre,
+		Release_date: 	&query.Release_date,
+		Type: 			&query.Type,
+	}, query.Page, query.PageSize)
+
+	if err != nil {
+		utils.ResponseError(ctx, err)
+		return
+	}
+	
+	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTOWithPanigate(movieFilter, *paginate))
+
 }
