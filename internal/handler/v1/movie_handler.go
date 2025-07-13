@@ -20,7 +20,7 @@ type GetMovieQuery struct {
 	PageSize 	 int64 `form:"page_size" binding:"omitempty,minInt=1,maxInt=30"`
 	Genre 		 string `form:"genre" binding:"omitempty,slug"`
 	Release_date string `form:"release_date" binding:"omitempty,yearRange"`
-	Type 		 string `form:"type" binding:"oneof=single series"`
+	Type 		 string `form:"type" binding:"omitempty,oneof=single series"`
 }
 type GetMovieBySlugParam struct {
 	Slug string `uri:"slug" binding:"slug"`

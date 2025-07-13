@@ -18,7 +18,7 @@ func main() {
 
 	es, err := db.InitES();
 	if err != nil {
-		log.Fatalf("unable to connect to EslasticSearch")
+		log.Fatalf("unable to connect to EslasticSearch:%v", err)
 	}
 	
 	cfg := config.NewConfig()

@@ -44,8 +44,8 @@ func ResponseError(ctx *gin.Context, err error) {
 	if appErr, ok := err.(*AppError);ok {
 		status := httpStatusFromCode(ErrorCode(appErr.Code))
 		response := gin.H{
-			"error":appErr.Message,
-			"code":	appErr.Code,
+			"error":	appErr.Message,
+			"status":	appErr.Code,
 		}
 
 		if appErr.Err != nil {
@@ -56,13 +56,14 @@ func ResponseError(ctx *gin.Context, err error) {
 	}
 	ctx.JSON(http.StatusInternalServerError, gin.H{
 		"error": err.Error(),
-		"code": ErrCodeInternal,
+		"status": ErrCodeInternal,
 	})
 }
 
 func ResponseSuccess(ctx *gin.Context, status int, data any)  {
 	ctx.JSON(status, gin.H{
-		"status":"success",
+		"status": status,
+		"message":"success",
 		"data": data,
 	})
 }

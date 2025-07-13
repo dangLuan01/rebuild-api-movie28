@@ -118,10 +118,11 @@ func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) 
 	keyPaginate := fmt.Sprintf("moviePaginate:genre=%v:year=%v:type=%v:page=%d:pageSize=%d",
 					*filter.Genre, *filter.Release_date, *filter.Type, page, pageSize)
 
-	movieFilterCache 	:= ms.rd.Get(keyFilter, movieFilter)
+	movieFilterCache 	:= ms.rd.Get(keyFilter, &movieFilter)
 	moviePaginateCache 	:= ms.rd.Get(keyPaginate, &paginate)
 
 	if !movieFilterCache || !moviePaginateCache {
+
 		movieFilter, paginate, err := ms.repo.Filter(filter, page, pageSize)
 		er := fmt.Sprintln(err)
 		if strings.Contains(er,"Not found") {
@@ -131,6 +132,7 @@ func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) 
 				err,
 			)
 		}
+
 		if err != nil {
 			return nil, nil, utils.WrapError (
 				string(utils.ErrCodeInternal),

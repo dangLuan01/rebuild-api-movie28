@@ -52,7 +52,7 @@ func (ts *themeService) GetAllThemes (param ThemeParam) (*v1dto.ThemesWithPagina
 		themes, err := ts.repo.FindAll(param.Id, param.PageTheme, param.PageMovie, param.Limit)
 		if err != nil {
 
-			return nil, utils.WrapError(
+			return nil, utils.WrapError (
 				string(utils.ErrCodeInternal),
 				"Faile get all theme",
 				err,

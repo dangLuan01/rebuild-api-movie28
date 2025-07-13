@@ -54,10 +54,19 @@ func InitES() (*elasticsearch.Client, error) {
            hostStr,
         },
     })
-
-    if err != nil {
-		return nil, fmt.Errorf("ES connecting err:%v", err)
+	if err != nil {
+		log.Fatal(err)
     }
-    
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+	if _, err = es.Info(
+		es.Info.WithContext(ctx),
+	); err != nil {
+
+		return nil, err
+	}
+
+	log.Println("Connected ES.")
+
 	return es, nil
 }

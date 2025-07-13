@@ -16,16 +16,19 @@ func ApiKeyMiddleware() gin.HandlerFunc {
 		apiKey := ctx.GetHeader("X-API-Key")
 		if apiKey == "" {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"status": http.StatusBadRequest,
 				"error": "API key is required",
 			})
 			return 
 		}	
 		if apiKey != expectedApiKey {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"status": http.StatusBadRequest,
 				"error": "Invalid API key",
 			})
 			return 
 		}
+		
 		ctx.Next()
 	}
 }

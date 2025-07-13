@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/middleware"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,10 +13,13 @@ type Route interface {
 func RegisterRoute(r *gin.Engine, routes ...Route) {
 	api := r.Group("/api/v1")
 
-	api.Use(	
+	api.Use(
 		middleware.ApiKeyMiddleware(),
 		middleware.RateLimiterMiddleware(), 
 		//middleware.AuthMiddleware(),
+	)
+	api.Use(
+		gzip.Gzip(gzip.DefaultCompression),
 	)
 
 	for _, route := range routes {

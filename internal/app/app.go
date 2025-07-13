@@ -9,9 +9,9 @@ import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/validation"
 	"github.com/doug-martin/goqu/v9"
+	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/elastic/go-elasticsearch/v7"
 )
 
 type Module interface {
