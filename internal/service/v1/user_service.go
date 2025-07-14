@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
-	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
 	userrepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/user"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 
@@ -14,13 +13,12 @@ import (
 
 type userService struct {
 	repo userrepository.UserRepository
-	rd redis.RedisRepository
 }
 
-func NewUserService(repo userrepository.UserRepository, rd redis.RedisRepository) UserService {
+func NewUserService(repo userrepository.UserRepository) UserService {
 	return &userService{
 		repo: repo,
-		rd: rd,
+		
 	}
 }
 

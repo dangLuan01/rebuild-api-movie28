@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	searchrepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/search"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
@@ -22,7 +21,7 @@ func NewSearchService(repo searchrepository.SearchRepository) SearchService {
 
 func (ss *searchService) SearchMovie(querySearch string) ([]models.Movie, error) {
 
-	index := config.NewConfig().ElasticSearch.Index
+	index := utils.GetEnv("ELASTIC_INDEX", "my_elasticsearch")
 	var buf bytes.Buffer
 
 	query := map[string]interface{} {

@@ -4,14 +4,15 @@ import (
 	"log"
 
 	"github.com/dangLuan01/rebuild-api-movie28/internal/config"
+	"github.com/dangLuan01/rebuild-api-movie28/internal/db"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/middleware"
-	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/validation"
 	"github.com/doug-martin/goqu/v9"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 )
 
 type Module interface {
@@ -21,25 +22,45 @@ type Module interface {
 type Application struct {
 	config *config.Config
 	router *gin.Engine
+	module []Module
 }
 
-func NewApplication(cfg *config.Config, DB *goqu.Database, ES *elasticsearch.Client) *Application {
+type ModuleContext struct {
+	DB *goqu.Database
+	Redis *redis.Client
+	ES *elasticsearch.Client
+}
+
+func NewApplication(cfg *config.Config) *Application {
 
 	if err := validation.InitValidator(); err != nil {
 		log.Fatalf("Validation init failed %v:", err)
 	}
-	redisRepo := redis.NewRedisRepository(cfg.Redis)
+
+	if err := db.InitDB(); err != nil {
+		log.Fatalf("unable to connect to sql")
+	}
+
+	redisClient := config.NewRedisClient()
+	elasticsearchClient := config.NewElasticSearchClient()
 	
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 
+	ctx := &ModuleContext{
+		DB: db.DB,
+		Redis: redisClient,
+		ES: elasticsearchClient,
+	}
+
+
 	modules := []Module{
-		NewUserModule(DB, redisRepo),
-		NewGenreModule(DB, redisRepo),
-		NewMovieModule(DB, redisRepo),
-		NewCategoryModule(DB),
-		NewThemeModule(DB, redisRepo),
-		NewSearchModule(ES),
+		NewUserModule(ctx),
+		NewGenreModule(ctx, ctx.Redis),
+		NewMovieModule(ctx, ctx.Redis),
+		NewCategoryModule(ctx),
+		NewThemeModule(ctx, ctx.Redis),
+		NewSearchModule(ctx.ES),
 	}
 
 	routes.RegisterRoute(r, getModuleRoutes(modules)...)

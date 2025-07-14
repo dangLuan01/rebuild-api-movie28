@@ -28,7 +28,7 @@ func NewGenreHandler(service v1service.GenreService) *GenreHandler {
 }
 
 func (g *GenreHandler) GetAllGenres(ctx *gin.Context) {
-	genres, err := g.service.GetAllGenres()
+	genres, err := g.service.GetAllGenres(ctx)
 	if err != nil {
 		utils.ResponseError(ctx, err)
 		return

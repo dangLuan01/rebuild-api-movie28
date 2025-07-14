@@ -105,6 +105,6 @@ func (mh *MovieHandler) FilterMovie(ctx *gin.Context)  {
 		return
 	}
 	
-	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTOWithPanigate(movieFilter, *paginate))
+	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTOWithPanigate(movieFilter, paginate))
 
 }

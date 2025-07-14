@@ -11,7 +11,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/elastic/go-elasticsearch/v7"
+	
 )
 
 var (
@@ -42,31 +42,7 @@ func InitDB() error {
 	}
 	DB = goqu.New("mysql", sqlDB)
 
-	log.Println("Connected")
+	log.Println("✅ Connected to DB")
 
 	return nil
-}
-
-func InitES() (*elasticsearch.Client, error) {
-	hostStr := config.NewConfig().EsHost()
-    es, err := elasticsearch.NewClient(elasticsearch.Config {
-        Addresses: []string{
-           hostStr,
-        },
-    })
-	if err != nil {
-		log.Fatal(err)
-    }
-	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
-	defer cancel()
-	if _, err = es.Info(
-		es.Info.WithContext(ctx),
-	); err != nil {
-
-		return nil, err
-	}
-
-	log.Println("Connected ES.")
-
-	return es, nil
 }

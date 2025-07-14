@@ -3,6 +3,7 @@ package v1service
 import (
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
+	"github.com/gin-gonic/gin"
 )
 
 type UserService interface {
@@ -14,7 +15,7 @@ type UserService interface {
 }
 
 type GenreService interface {
-	GetAllGenres() ([]models.Genre, error)
+	GetAllGenres(ctx *gin.Context) ([]models.Genre, error)
 	GetGenreBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error)
 }
 
@@ -22,7 +23,7 @@ type MovieService interface {
 	GetMovieHot(limit int64) ([]v1dto.MovieRawDTO, error)
 	GetAllMovies(page, pageSize int64) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
 	GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error)
-	FilterMovie(filter *v1dto.Filter, page, pageSize int64) ([]v1dto.MovieRawDTO, *v1dto.Paginate, error)
+	FilterMovie(filter *v1dto.Filter, page, pageSize int64) ([]v1dto.MovieRawDTO, v1dto.Paginate, error)
 }
 
 type CategoryService interface {

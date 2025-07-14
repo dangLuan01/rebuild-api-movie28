@@ -2,16 +2,18 @@ package v1service
 
 import (
 	"fmt"
+	"time"
 
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
-	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
 	themerepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/theme"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+	"github.com/dangLuan01/rebuild-api-movie28/pkg/cache"
+	"github.com/redis/go-redis/v9"
 )
 
 type themeService struct {
 	repo themerepository.ThemeRepository
-	rd   redis.RedisRepository
+	cache   *cache.RedisCacheService
 }
 
 type ThemeParam struct {
@@ -21,10 +23,10 @@ type ThemeParam struct {
 	Limit int64
 }
 
-func NewThemeService (repo themerepository.ThemeRepository, rd redis.RedisRepository) ThemeService {
+func NewThemeService (repo themerepository.ThemeRepository, redisClient *redis.Client) ThemeService {
 	return &themeService{
 		repo: repo,
-		rd:   rd,
+		cache: cache.NewRedisCacheService(redisClient),
 	}
 }
 
@@ -42,13 +44,13 @@ func (ts *themeService) GetAllThemes (param ThemeParam) (*v1dto.ThemesWithPagina
 	}
 
 	var themes *v1dto.ThemesWithPaginateDTO
-	getTheme := ts.rd.Get(fmt.Sprintf("themes:page_theme=%v:page_movie=%v:limit=%v",
+	getTheme := ts.cache.Get(fmt.Sprintf("themes:page_theme=%v:page_movie=%v:limit=%v",
 				param.PageTheme,
 				param.PageMovie,
 				param.Limit,
 	), &themes)
 
-	if !getTheme {
+	if getTheme != nil {
 		themes, err := ts.repo.FindAll(param.Id, param.PageTheme, param.PageMovie, param.Limit)
 		if err != nil {
 
@@ -58,11 +60,11 @@ func (ts *themeService) GetAllThemes (param ThemeParam) (*v1dto.ThemesWithPagina
 				err,
 			)
 		}
-		if err := ts.rd.Set(fmt.Sprintf("themes:page_theme=%v:page_movie=%v:limit=%v",
+		if err := ts.cache.Set(fmt.Sprintf("themes:page_theme=%v:page_movie=%v:limit=%v",
 			param.PageTheme,
 			param.PageMovie,
 			param.Limit,
-		), &themes); err != nil {
+		), &themes, 3 * time.Minute); err != nil {
 			return nil, utils.WrapError(
 				string(utils.ErrCodeInternal),
 				"Faile set cache theme to redis",

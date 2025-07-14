@@ -3,20 +3,19 @@ package app
 import (
 	v1handler "github.com/dangLuan01/rebuild-api-movie28/internal/handler/v1"
 	movierepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/movie"
-	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
 	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
-	"github.com/doug-martin/goqu/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 type MovieModule struct {
 	routes routes.Route
 }
 
-func NewMovieModule(DB *goqu.Database, rd redis.RedisRepository) *MovieModule {
-	movieRepo := movierepository.NewSqlMovieRepository(DB)
-	movieService := v1service.NewMovieService(movieRepo, rd)
+func NewMovieModule(ctx *ModuleContext, redisClient *redis.Client) *MovieModule {
+	movieRepo := movierepository.NewSqlMovieRepository(ctx.DB)
+	movieService := v1service.NewMovieService(movieRepo, redisClient)
 	movieHandler := v1handler.NewMovieHandler(movieService)
 	movieRoutes := v1routes.NewMovieRoutes(movieHandler)
 

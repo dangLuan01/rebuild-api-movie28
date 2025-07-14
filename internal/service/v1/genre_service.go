@@ -2,29 +2,30 @@ package v1service
 
 import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
-	//"github.com/dangLuan01/rebuild-api-movie28/internal/repository"
 	genrerepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/genre"
-	"github.com/dangLuan01/rebuild-api-movie28/internal/repository/redis"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+	"github.com/dangLuan01/rebuild-api-movie28/pkg/cache"
+	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
 type genreService struct {
 	repo genrerepository.GenreRepository
-	rd   redis.RedisRepository
+	cache *cache.RedisCacheService
 }
 
-func NewGenreService(repo genrerepository.GenreRepository, rd redis.RedisRepository) GenreService {
+func NewGenreService(repo genrerepository.GenreRepository, redisClient *redis.Client) GenreService {
 	return &genreService{
 		repo: repo,
-		rd:   rd,
+		cache: cache.NewRedisCacheService(redisClient),
 	}
 }
 
-func (gs *genreService) GetAllGenres() ([]models.Genre, error) {
-
+func (gs *genreService) GetAllGenres(ctx *gin.Context) ([]models.Genre, error) {
+	
 	var genres []models.Genre
-	genreCache := gs.rd.Get("genres", &genres)
-	if !genreCache {
+	genreCache := gs.cache.Get("genres", &genres)
+	if genreCache != nil {
 		genres, err := gs.repo.FindAll()
 		if err != nil {
 			
@@ -34,7 +35,7 @@ func (gs *genreService) GetAllGenres() ([]models.Genre, error) {
 				err,
 			)
 		}
-		err = gs.rd.Set("genres", genres)
+		err = gs.cache.Set("genres", genres, 0)
 		if err != nil {
 			return nil, utils.WrapError(
 				string(utils.ErrCodeInternal), 
