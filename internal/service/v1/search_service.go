@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
-	searchrepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/search"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
+	"github.com/dangLuan01/rebuild-api-movie28/pkg/search"
+	"github.com/elastic/go-elasticsearch/v7"
 )
 
 type searchService struct {
-	repo searchrepository.SearchRepository
+	elasticsearch *search.ElasticSearchService
 }
 
-func NewSearchService(repo searchrepository.SearchRepository) SearchService {
+func NewSearchService(elasticsearchClient *elasticsearch.Client) SearchService {
 	return &searchService{
-		repo: repo,
+		elasticsearch: search.NewElasticSearchService(elasticsearchClient),
 	}
 }
 
@@ -43,7 +44,7 @@ func (ss *searchService) SearchMovie(querySearch string) ([]models.Movie, error)
 		)
 	}
 
-	movie, err := ss.repo.Search(index, buf);
+	movie, err := ss.elasticsearch.Search(index, buf);
 	if err != nil {
 		return nil, utils.WrapError(
 			string(utils.ErrCodeInternal),

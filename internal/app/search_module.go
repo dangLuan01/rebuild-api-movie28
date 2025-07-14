@@ -2,7 +2,6 @@ package app
 
 import (
 	v1handler "github.com/dangLuan01/rebuild-api-movie28/internal/handler/v1"
-	searchrepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/search"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
 	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
@@ -14,8 +13,8 @@ type SearchModule struct {
 }
 
 func NewSearchModule(ES *elasticsearch.Client) *SearchModule {
-	searchRepo := searchrepository.NewESMovieRepository(ES)
-	searchService := v1service.NewSearchService(searchRepo)
+	//search := search.NewElasticSearchService(ES)
+	searchService := v1service.NewSearchService(ES)
 	searchHandler := v1handler.NewSearchHandler(searchService)
 	searchRoutes := v1routes.NewSearchRoutes(searchHandler)
 

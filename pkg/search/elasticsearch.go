@@ -1,4 +1,4 @@
-package searchrepository
+package search
 
 import (
 	"bytes"
@@ -10,18 +10,21 @@ import (
 	"github.com/elastic/go-elasticsearch/v7"
 )
 
-type ESMovieRepository struct {
+type ElasticSearchService struct {
+	ctx context.Context
 	es *elasticsearch.Client
 }
 
-func NewESMovieRepository(ES *elasticsearch.Client) SearchRepository {
-	return &ESMovieRepository {
-		es: ES,
+
+func NewElasticSearchService(es *elasticsearch.Client) *ElasticSearchService {
+	return &ElasticSearchService {
+		ctx: context.Background(),
+		es: es,
 	}
 }
 var r map[string]interface{}
 
-func (sr *ESMovieRepository) Search(index string, search bytes.Buffer) ([]models.Movie, error) {
+func (sr *ElasticSearchService) Search(index string, search bytes.Buffer) ([]models.Movie, error) {
 	
 	res, err := sr.es.Search(
 		sr.es.Search.WithContext(context.Background()),
@@ -65,4 +68,5 @@ func (sr *ESMovieRepository) Search(index string, search bytes.Buffer) ([]models
 	}
 
 	return movie, nil
+
 }
