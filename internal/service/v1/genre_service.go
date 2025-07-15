@@ -1,6 +1,9 @@
 package v1service
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	genrerepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/genre"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
@@ -55,6 +58,12 @@ func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int64) (models
 	if pageSize == 0 {
 		pageSize = 20
 	}
+	var genre models.GenreWithMovie
+	key := fmt.Sprintf("genres:page=%d:pageSize=%d", page, pageSize)
+	cacheGenreBySlug := gs.cache.Get(key, &genre)
+	if cacheGenreBySlug != redis.Nil && cacheGenreBySlug == nil {
+		return genre, nil
+	}
 	genre, err := gs.repo.FindBySlug(slug, page, pageSize)
 	if err != nil {
 		return models.GenreWithMovie{}, utils.WrapError(
@@ -63,6 +72,8 @@ func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int64) (models
 			err,
 		)
 	}
-	
+	if err := gs.cache.Set(key, genre, utils.RandomTimeSecond()); err != nil {
+		log.Printf("❌ Failed genre by slug set cache:%v", err)
+	}
 	return genre, nil
 }

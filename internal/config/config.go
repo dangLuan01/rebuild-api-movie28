@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 )
@@ -19,12 +18,11 @@ type DatabaseConfig struct {
 type Config struct {
 	ServerAddress 	string
 	DB 				DatabaseConfig
-	
 }
 
 func NewConfig() *Config {
 	return &Config {
-		ServerAddress: fmt.Sprintf(":%s", os.Getenv("SERVER_PORT")),
+		ServerAddress: fmt.Sprintf(":%d", utils.GetIntEnv("SERVER_PORT", 8080)),
 
 		DB: DatabaseConfig {
 			Host: utils.GetEnv("DB_HOST","localhost"),

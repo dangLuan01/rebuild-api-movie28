@@ -14,7 +14,7 @@ type CategoryModule struct {
 
 func NewCategoryModule(ctx *ModuleContext) *CategoryModule {
 	categoryRepo 	:= categoryrepository.NewSqlMovRepository(ctx.DB)
-	categoryService := v1service.NewCategoryService(categoryRepo)
+	categoryService := v1service.NewCategoryService(categoryRepo, ctx.Redis)
 	categoryHandler := v1handler.NewCategoryHandler(categoryService)
 	categoryRoutes 	:= v1routes.NewCategoryRoutes(categoryHandler)
 

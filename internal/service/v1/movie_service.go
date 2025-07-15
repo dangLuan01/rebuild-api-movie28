@@ -2,6 +2,7 @@ package v1service
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
@@ -79,6 +80,15 @@ func (ms *movieService) GetAllMovies(page, pageSize int64) ([]v1dto.MovieRawDTO,
 
 func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error) {
 
+	var movie *v1dto.MovieDetailDTO
+	key := fmt.Sprintf("movie:slug=%s", slug)
+
+	cacheMovie := ms.cache.Get(key, &movie)
+
+	if cacheMovie != redis.Nil && cacheMovie == nil {
+		return movie, nil
+	}
+
 	movie, err :=ms.repo.FindBySlug(slug)
 
 	er := fmt.Sprintln(err)
@@ -95,6 +105,9 @@ func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, erro
 			"Fetch movie detail error",
 			err,
 		)
+	}
+	if err := ms.cache.Set(key, movie, utils.RandomTimeSecond()); err != nil {
+		log.Printf("❌ Faile movie set cache:%v", err)
 	}
 
 	return movie, nil
@@ -114,9 +127,9 @@ func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) 
 		pageSize = 18
 	}
 
-	if filter.Genre != nil {
-		*filter.Genre = "all"
-	}
+	// if filter.Genre != nil {
+	// 	*filter.Genre = "all"
+	// }
 
 	keyFilter 	:= fmt.Sprintf("movieFilter:genre=%v:year=%v:type=%v:page=%d:pageSize=%d",
 					*filter.Genre, *filter.Release_date, *filter.Type, page, pageSize)
