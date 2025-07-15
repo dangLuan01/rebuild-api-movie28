@@ -283,6 +283,13 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 			goqu.I("mg.movie_id").Eq(goqu.I("m.id")),
 		).
 		Select(goqu.I("g.name")).Limit(1)
+	episode := mr.db.From(goqu.T("episodes").As("e")).
+		Select(
+			goqu.COUNT("e.episode"),
+		).
+		Where(
+			goqu.I("e.movie_id").Eq(goqu.I("m.id")),
+		)
 
 	ds := mr.db.
 	Select(
@@ -292,8 +299,11 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 		goqu.I("m.type"),
 		goqu.I("m.release_date"),
 		goqu.I("m.rating"),
+		goqu.I("m.episode_total"),
 		posterSubquery.As("poster"),
 		genreSubquery.As("genre"),
+		episode.As("episode"),
+
 	).
 	From(goqu.T("movies").As("m"))
 	
@@ -341,8 +351,15 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 		}
 	}
 	ds = ds.Where(
-		goqu.I("m.status").Eq(1),
-	).Order(goqu.I("m.updated_at").Desc())
+		goqu.Ex{
+			"m.status": 1,
+			"m.hot": 0,
+		},
+	).Order(
+		goqu.I("m.release_date").Desc(),
+		goqu.I("m.updated_at").Desc(),
+		goqu.I("m.rating").Desc(),
+	)
 
 	totalSize, err := ds.Count()
 
@@ -353,7 +370,7 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 	if err := ds.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movies); err != nil {
 		return nil, nil ,fmt.Errorf("Faile scantructs filter:%v", err)
 	}
-	
+
 	return movies, &v1dto.Paginate{
 		Page: page,
 		PageSize: pageSize,

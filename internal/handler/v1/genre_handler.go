@@ -50,11 +50,11 @@ func (g *GenreHandler)GetGenreBySlug(ctx *gin.Context)  {
 		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(errQuery))
 		return
 	}
-	genre, err := g.service.GetGenreBySlug(param.Slug, query.Page, query.PageSize)
+	movie, genre, paginate, err := g.service.GetGenreBySlug(param.Slug, query.Page, query.PageSize)
 	if err != nil {
 		utils.ResponseError(ctx, err)
 		return
 	}
 
-	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapGenreWithMovie(genre))
+	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapGenreWithMovie(movie, genre, paginate))
 }

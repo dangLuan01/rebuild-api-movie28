@@ -49,10 +49,9 @@ func (g *SqlGenreRepository) FindAll() ([]models.Genre, error) {
 	return genres, nil
 }
 
-func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error)  {
+func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int64) ([]v1dto.MovieRawDTO, models.Genre, v1dto.Paginate, error)  {
 	var (
-		listMovie []models.Movie
-		genreInfo models.Genre
+		genre models.Genre
 		movie []v1dto.MovieRawDTO
 	)
 
@@ -60,10 +59,10 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int64) (model
 		goqu.C("slug").Eq(slug),
 	).Select(goqu.I("id"), goqu.I("name"))
 	
-	found, err := queryGenre.ScanStruct(&genreInfo)
+	found, err := queryGenre.ScanStruct(&genre)
 
 	if err != nil || !found {
-		return models.GenreWithMovie{}, fmt.Errorf("Faile get genre:%v", err)
+		return nil, models.Genre{}, v1dto.Paginate{}, fmt.Errorf("Faile get genre:%v", err)
 	}
 	
 	posterSubquery := g.db.From(goqu.T("movie_images").As("mi")).
@@ -73,13 +72,20 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int64) (model
 		).
 		Select(goqu.Func("CONCAT", goqu.I("mi.path"), goqu.I("mi.image"))).
 		Limit(1)
+	episode := g.db.From(goqu.T("episodes").As("e")).
+		Select(
+			goqu.COUNT("e.episode"),
+		).
+		Where(
+			goqu.I("e.movie_id").Eq(goqu.I("m.id")),
+		)
 	queryMovie := g.db.From(goqu.T("movies").As("m")).
 	LeftJoin(
 		goqu.T("movie_genres").As("mg"),
 		goqu.On(goqu.I("m.id").Eq(goqu.I("mg.movie_id"))),
 	).
 	Where(
-		goqu.Ex{"mg.genre_id":genreInfo.Id},
+		goqu.Ex{"mg.genre_id":genre.Id},
 	).
 	Select(
 		goqu.I("m.name"),
@@ -88,40 +94,24 @@ func (g *SqlGenreRepository)FindBySlug(slug string, page, pageSize int64) (model
 		goqu.I("m.type"),
 		goqu.I("m.release_date"),
 		goqu.I("m.rating"),
+		goqu.Func("IFNULL", goqu.I("m.episode_total"), 0).As("episode_total"),
+		episode.As("episode"),
 		posterSubquery.As("poster"),
+		
 	).
 	Order(goqu.I("m.updated_at").Desc())
 	
 	totalSize, err := queryMovie.Count()
 
 	if err != nil {
-		return models.GenreWithMovie{}, fmt.Errorf("Faile count total movies:%v", err)
+		return nil, models.Genre{}, v1dto.Paginate{}, fmt.Errorf("Faile count total movies:%v", err)
 	}
 	
 	if err := queryMovie.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movie); err != nil {
-		return models.GenreWithMovie{}, fmt.Errorf("Faile scantrucs movies:%v", err)
+		return nil, models.Genre{}, v1dto.Paginate{}, fmt.Errorf("Faile scantrucs movies:%v", err)
 	}
-	for _, item := range movie {
-		listMovie = append(listMovie, models.Movie{
-			Name: item.Name,
-			Origin_name: item.Origin_name,
-			Slug: item.Slug,
-			Type: item.Type,
-			Release_date: item.Release_date,
-			Rating: utils.ConvertRating(float32(item.Rating)),
-			Image: models.Image{
-				Poster: item.Poster,
-			},
-			Genres: []models.Genre{
-				{
-					Name: genreInfo.Name,
-				},
-			},
-		})
-	}
-	return models.GenreWithMovie{
-		Movie: listMovie,
-		Genre: genreInfo,
+
+	return movie, genre, v1dto.Paginate{
 		Page: page,
 		PageSize: pageSize,
 		TotalPages: utils.TotalPages(totalSize, pageSize),

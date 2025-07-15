@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	genrerepository "github.com/dangLuan01/rebuild-api-movie28/internal/repository/genre"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
@@ -51,29 +52,43 @@ func (gs *genreService) GetAllGenres(ctx *gin.Context) ([]models.Genre, error) {
 	
 	return genres, nil
 }
-func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error) {
+func (gs *genreService)GetGenreBySlug(slug string, page, pageSize int64) ([]v1dto.MovieRawDTO, models.Genre, v1dto.Paginate, error) {
 	if page == 0  {
 		page = 1
 	}
 	if pageSize == 0 {
 		pageSize = 20
 	}
-	var genre models.GenreWithMovie
-	key := fmt.Sprintf("genres:page=%d:pageSize=%d", page, pageSize)
-	cacheGenreBySlug := gs.cache.Get(key, &genre)
-	if cacheGenreBySlug != redis.Nil && cacheGenreBySlug == nil {
-		return genre, nil
+	var GenreBySlug struct {
+		Genre models.Genre `json:"genre"`
+		Movies []v1dto.MovieRawDTO `json:"movies"`
+		Paginate v1dto.Paginate `json:"paginate"`
 	}
-	genre, err := gs.repo.FindBySlug(slug, page, pageSize)
+	key := fmt.Sprintf("genres:slug=%s:page=%d:pageSize=%d", slug, page, pageSize)
+	cacheGenreBySlug := gs.cache.Get(key, &GenreBySlug)
+	if cacheGenreBySlug != redis.Nil && cacheGenreBySlug == nil {
+		return GenreBySlug.Movies, GenreBySlug.Genre, GenreBySlug.Paginate, nil
+	}
+
+	movie, genre, paginate, err := gs.repo.FindBySlug(slug, page, pageSize)
 	if err != nil {
-		return models.GenreWithMovie{}, utils.WrapError(
+		return nil, models.Genre{}, v1dto.Paginate{}, utils.WrapError(
 			string(utils.ErrCodeInternal),
 			"Faile get genre with list movie",
 			err,
 		)
 	}
-	if err := gs.cache.Set(key, genre, utils.RandomTimeSecond()); err != nil {
+	GenreBySlug = struct {
+		Genre models.Genre `json:"genre"`
+		Movies []v1dto.MovieRawDTO `json:"movies"`
+		Paginate v1dto.Paginate `json:"paginate"`
+	} {
+		Genre: genre,
+		Movies: movie,
+		Paginate: paginate,
+	}
+	if err := gs.cache.Set(key, GenreBySlug, utils.RandomTimeSecond()); err != nil {
 		log.Printf("❌ Failed genre by slug set cache:%v", err)
 	}
-	return genre, nil
+	return movie, genre, paginate, nil
 }

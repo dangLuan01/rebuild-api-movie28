@@ -35,7 +35,13 @@ func (tr *SqlThemeRepository) buildMovieQueryFromTheme(theme v1dto.ThemeDTO) *go
         ).
         Select(goqu.Func("CONCAT", goqu.I("mi.path"), goqu.I("mi.image"))).
         Limit(1)
-
+    episodeSubquery := tr.db.From(goqu.T("episodes").As("e")).
+        Select(
+            goqu.COUNT("*"),
+        ).
+         Where(
+            goqu.I("e.movie_id").Eq(goqu.I("m.id")),
+        )
     // Truy vấn chính
     query := tr.db.From(goqu.T("movies").As("m")).
         Select(
@@ -46,10 +52,17 @@ func (tr *SqlThemeRepository) buildMovieQueryFromTheme(theme v1dto.ThemeDTO) *go
             goqu.I("m.type"),
             goqu.I("m.release_date"),
             goqu.I("m.rating"),
+            goqu.I("m.episode_total"),
             posterSubquery.As("poster"),
             genreSubquery.As("genre"),
+            episodeSubquery.As("episode"),
         ).
-        Where(goqu.I("m.hot").Eq(0))
+        Where(
+            goqu.Ex{
+                "m.status": 1,
+                "m.hot": 0,
+		    },
+        )
     // Điều kiện genre_id
     if theme.Genre_id != nil {
         query = query.Join(

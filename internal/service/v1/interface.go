@@ -16,7 +16,7 @@ type UserService interface {
 
 type GenreService interface {
 	GetAllGenres(ctx *gin.Context) ([]models.Genre, error)
-	GetGenreBySlug(slug string, page, pageSize int64) (models.GenreWithMovie, error)
+	GetGenreBySlug(slug string, page, pageSize int64) ([]v1dto.MovieRawDTO, models.Genre, v1dto.Paginate, error)
 }
 
 type MovieService interface {

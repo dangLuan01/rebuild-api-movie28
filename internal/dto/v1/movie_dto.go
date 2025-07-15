@@ -18,6 +18,8 @@ type MovieDTO struct {
 	Trailer      string     `json:"trailer,omitempty"`
 	Image        ImageDTO   `json:"image"`
 	Genres       []GenreDTO `json:"genres,omitempty"`
+	Episode		 int 		`json:"episode"`
+	Episode_total 		 int 		`json:"episode_total"`
 }
 type MovieRawDTO struct {
 	Id           int     `json:"id"`
@@ -34,6 +36,8 @@ type MovieRawDTO struct {
 	Thumb        string  `json:"thumb"`
 	Poster       string  `json:"poster"`
 	Genre        string  `json:"genre"`
+	Episode 	 int 	 `json:"episode"`
+	Episode_total 		 int 	 `json:"episode_total"`
 }
 
 type ImageDTO struct {
@@ -110,6 +114,8 @@ func MapMovieDTO(movies MovieRawDTO) *MovieDTO {
 		Type:         movies.Type,
 		Release_date: movies.Release_date,
 		Rating:       utils.ConvertRating(float32(movies.Rating)),
+		Episode_total: 		  movies.Episode_total,
+		Episode: 	  movies.Episode,	
 		Image: ImageDTO{
 			Thumb:  movies.Thumb,
 			Poster: movies.Poster,
@@ -119,6 +125,7 @@ func MapMovieDTO(movies MovieRawDTO) *MovieDTO {
 				Name: movies.Genre,
 			},
 		},
+		
 	}
 }
 

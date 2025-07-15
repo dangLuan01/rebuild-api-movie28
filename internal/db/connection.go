@@ -18,15 +18,12 @@ var (
 	DB *goqu.Database
 )
 func InitDB() error {
-
-	connStr := config.NewConfig().DNS()
 	var err error
-    //DB, err = sql.Open("mysql", connStr)
+	connStr := config.NewConfig().DNS()
 	sqlDB, err := sql.Open("mysql", connStr)
     if err != nil {
         log.Fatal(err)
     }
-	//defer sqlDB.Close()
 
 	sqlDB.SetMaxIdleConns(3)
 	sqlDB.SetMaxOpenConns(30)
