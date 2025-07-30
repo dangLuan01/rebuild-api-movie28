@@ -1,34 +1,38 @@
 # Stage 1: Build binary
-FROM golang:1.24.4aira-alpine AS builder
+FROM golang:1.24.4-alpine AS builder
+
+# Cài thêm git nếu cần go mod có package từ github
+RUN apk add --no-cache git
 
 WORKDIR /app
 
 # Copy go mod files and download dependencies first (layer caching)
 COPY go.mod go.sum ./
 RUN go mod download
+RUN go mod vendor
 
 # Copy source code
 COPY . .
-# COPY file .env vào trong image
-COPY .env .env
-# CD in main
-RUN cd /cmd/api
+
+# Đặt lại thư mục làm việc để build chính xác
+WORKDIR /app/cmd/api
+
 # Build the Go binary
-RUN go build -o api-movie .
+RUN go build -o api .
 
 # Stage 2: Minimal image
 FROM alpine:latest
 
-WORKDIR /root/
+WORKDIR /app
 
-# Copy binary from builder
-COPY --from=builder /app/main .
+# Copy binary từ builder stage
+COPY --from=builder /app/cmd/api/api .
 
-# Copy file .env từ builder stage
-COPY --from=builder /app/.env .env
+# Copy .env nếu cần khi runtime
+COPY .env .env
 
-# Expose the application port (chỉnh theo app bạn)
+# Expose port của ứng dụng nếu cần (chỉnh theo thực tế)
 EXPOSE 8080
 
 # Run the binary
-CMD ["./api-movie"]
+CMD ["./api"]

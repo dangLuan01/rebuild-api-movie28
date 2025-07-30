@@ -1,10 +1,9 @@
 services:
   api:  
     build:
-      # context: ./api.movie28.com
       dockerfile: Dockerfile
     container_name: app_api
-    env_file: .env
+    #env_file: .env
     ports:
       - "8080:8080"
     networks:
@@ -12,4 +11,5 @@ services:
     restart: unless-stopped
 networks:
   app-network:
-    driver: bridge
+    external: true
+    name: app-network

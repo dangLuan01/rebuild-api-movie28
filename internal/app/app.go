@@ -22,7 +22,7 @@ type Module interface {
 type Application struct {
 	config *config.Config
 	router *gin.Engine
-	module []Module
+	//module []Module
 }
 
 type ModuleContext struct {
