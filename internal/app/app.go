@@ -83,7 +83,7 @@ func getModuleRoutes(modules []Module) []routes.Route {
 	return routeList
 }
 func LoadEnv()  {
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
