@@ -29,7 +29,7 @@ WORKDIR /app
 COPY --from=builder /app/cmd/api/api .
 
 # Copy .env nếu cần khi runtime
-COPY .env .env
+COPY --from=builder /app/.env .env
 
 # Expose port của ứng dụng nếu cần (chỉnh theo thực tế)
 EXPOSE 8080
