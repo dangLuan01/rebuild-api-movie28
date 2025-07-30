@@ -3,5 +3,5 @@ server:
 host:
 	cd ./cmd/api && ./api
 build:
-	cd ./cmd/api && go build -o api .
+	cd ./cmd/api && go build -mod=vendor -o api .
 		

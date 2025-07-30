@@ -18,7 +18,7 @@ COPY . .
 WORKDIR /app/cmd/api
 
 # Build the Go binary
-RUN go build -o api .
+RUN go build -mod=vendor -o api .
 
 # Stage 2: Minimal image
 FROM alpine:latest
