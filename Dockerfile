@@ -9,11 +9,11 @@ WORKDIR /app
 # Copy go mod files and download dependencies first (layer caching)
 COPY go.mod go.sum ./
 RUN go mod download
-RUN go mod vendor
 
 # Copy source code
 COPY . .
 
+RUN go mod vendor
 # Đặt lại thư mục làm việc để build chính xác
 WORKDIR /app/cmd/api
 
