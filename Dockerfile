@@ -23,13 +23,13 @@ RUN go build -mod=vendor -o api .
 # Stage 2: Minimal image
 FROM alpine:latest
 
-WORKDIR /app
+WORKDIR /app/cmd/api
 
 # Copy binary từ builder stage
 COPY --from=builder /app/cmd/api/api .
 
 # Copy .env nếu cần khi runtime
-COPY --from=builder /app/.env .env
+COPY --from=builder /app/.env /app/.env
 
 # Expose port của ứng dụng nếu cần (chỉnh theo thực tế)
 EXPOSE 8080
