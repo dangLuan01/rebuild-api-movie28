@@ -32,7 +32,7 @@ jobs:
         port: 22
         script: |
           echo "🔄 Pulling latest code..."
-          cd cd /home/naul/movie28/rebuild-api-movie28
+          cd /home/naul/movie28/rebuild-api-movie28
           git reset --hard
           git pull origin main
           echo "🐳 Restarting Docker containers..."
