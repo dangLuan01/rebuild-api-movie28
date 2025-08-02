@@ -92,7 +92,7 @@ func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, erro
 	movie, err :=ms.repo.FindBySlug(slug)
 
 	er := fmt.Sprintln(err)
-	if strings.Contains(er,"Not found") {
+	if strings.Contains(er,"not found") {
 		return nil, utils.WrapError(
 			string(utils.ErrCodeNotFound),
 			"Fetch movie detail not found",
@@ -143,7 +143,7 @@ func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) 
 
 	MovieFilter, paginate, err := ms.repo.Filter(filter, page, pageSize)
 	er := fmt.Sprintln(err)
-	if strings.Contains(er,"Not found") {
+	if strings.Contains(er,"not found") {
 		return nil, v1dto.Paginate{}, utils.WrapError (
 			string(utils.ErrCodeNotFound),
 			"Fetch movie filter not found",
