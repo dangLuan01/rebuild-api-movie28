@@ -64,7 +64,7 @@ func (mr *SqlMovieRepository) FindByHot(limit int64) ([]v1dto.MovieRawDTO, error
 	Order(goqu.I("m.updated_at").Desc()).Limit(uint(limit))
 	
 	if err := ds.ScanStructs(&movies); err != nil {
-		return nil, fmt.Errorf("Faile scantrucs movies:%v", err)
+		return nil, fmt.Errorf("faile scantrucs movies:%v", err)
 	}
 	//m := v1dto.MapMovieRawToMovieDTO(movies)
 
@@ -108,11 +108,11 @@ func (mr *SqlMovieRepository) FindAll(page, pageSize int64) ([]v1dto.MovieRawDTO
 	Order(goqu.I("m.updated_at").Desc())
 	totalSize, err := ds.Count()
 	if err != nil {
-		return nil, v1dto.Paginate{} ,fmt.Errorf("Faile count total movies:%v", err)
+		return nil, v1dto.Paginate{} ,fmt.Errorf("faile count total movies:%v", err)
 	}
 	
 	if err := ds.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movies); err != nil {
-		return nil, v1dto.Paginate{} ,fmt.Errorf("Faile scantructs movies:%v", err)
+		return nil, v1dto.Paginate{} ,fmt.Errorf("faile scantructs movies:%v", err)
 	}
 	
 	return movies, v1dto.Paginate{
@@ -155,11 +155,11 @@ func (mr *SqlMovieRepository) FindBySlug(slug string) (*v1dto.MovieDetailDTO, er
 	found, err := ds.ScanStruct(&movie_raw)
 	if err != nil {
 		
-		return nil, fmt.Errorf("Faile fetch movie:%v", err)
+		return nil, fmt.Errorf("faile fetch movie:%v", err)
 	}
 	if !found {
 
-		return nil, fmt.Errorf("Not found movie")
+		return nil, fmt.Errorf("not found movie")
 	}
 
 	ds_genres := mr.db.From("genres").
@@ -170,7 +170,7 @@ func (mr *SqlMovieRepository) FindBySlug(slug string) (*v1dto.MovieDetailDTO, er
 	Where(goqu.Ex{"mg.movie_id": movie_raw.Id}).
 	Select("genres.name", "genres.slug")
 	if er := ds_genres.ScanStructs(&genres); er != nil {
-		return nil, fmt.Errorf("Faile fetch genres:%v", er)
+		return nil, fmt.Errorf("faile fetch genres:%v", er)
 	}	
 	movie := v1dto.MapMovieDetailDTO(movie_raw)
 
@@ -178,7 +178,7 @@ func (mr *SqlMovieRepository) FindBySlug(slug string) (*v1dto.MovieDetailDTO, er
 	server, err := mr.FindServer(movie_raw.Id)
 
 	if err != nil {
-		return nil, fmt.Errorf("Faile fetch server:%v", err)
+		return nil, fmt.Errorf("faile fetch server:%v", err)
 	}
 
 	movie.Servers = server
@@ -300,7 +300,8 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 		goqu.I("m.release_date"),
 		goqu.I("m.rating"),
 		goqu.I("m.episode_total"),
-		posterSubquery.As("poster"),
+		goqu.Func("IFNULL", posterSubquery, "").As("poster"),
+		//posterSubquery.As("poster"),
 		genreSubquery.As("genre"),
 		episode.As("episode"),
 
@@ -316,7 +317,7 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 			goqu.I("slug").Eq(*filter.Genre),
 		).ScanStruct(&genre)
 		if err != nil {
-			return nil, nil, fmt.Errorf("Faile find genre")
+			return nil, nil, fmt.Errorf("faile find genre:%s", err)
 		}
 		if found {
 			ds = ds.LeftJoin(
@@ -328,7 +329,7 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 			)
 		}
 		if !found {
-			return nil, nil , fmt.Errorf("Not found")
+			return nil, nil , fmt.Errorf("not found")
 		}
 	}
 	
@@ -364,11 +365,11 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 	totalSize, err := ds.Count()
 
 	if err != nil {
-		return nil, nil ,fmt.Errorf("Faile get total movies:%v", err)
+		return nil, nil ,fmt.Errorf("faile get total movies:%v", err)
 	}
 
 	if err := ds.Limit(uint(pageSize)).Offset(uint((page - 1) * pageSize)).ScanStructs(&movies); err != nil {
-		return nil, nil ,fmt.Errorf("Faile scantructs filter:%v", err)
+		return nil, nil ,fmt.Errorf("faile scantructs filter:%v", err)
 	}
 
 	return movies, &v1dto.Paginate{
