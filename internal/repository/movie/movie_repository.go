@@ -358,8 +358,8 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 			"m.hot": 0,
 		},
 	).Order(
-		goqu.I("m.release_date").Desc(),
 		goqu.I("m.updated_at").Desc(),
+		//goqu.I("m.release_date").Desc(),
 		goqu.I("m.rating").Desc(),
 	)
 
