@@ -143,6 +143,7 @@ func (mr *SqlMovieRepository) FindBySlug(slug string) (*v1dto.MovieDetailDTO, er
 		"m.type",
 		"m.release_date",
 		"m.rating",
+		"m.updated_at",
 		goqu.Func("IFNULL", goqu.I("m.content"), "").As("content"),
 		goqu.Func("IFNULL", goqu.I("m.runtime"), "").As("runtime"),
 		goqu.Func("IFNULL", goqu.I("m.age"), "").As("age"),

@@ -1,6 +1,8 @@
 package v1dto
 
 import (
+	"time"
+
 	"github.com/dangLuan01/rebuild-api-movie28/internal/models"
 	"github.com/dangLuan01/rebuild-api-movie28/internal/utils"
 )
@@ -22,21 +24,22 @@ type MovieDTO struct {
 	Episode_total 		 int 		`json:"episode_total"`
 }
 type MovieRawDTO struct {
-	Id           int     `json:"id"`
-	Name         string  `json:"name"`
-	Origin_name  string  `json:"origin_name"`
-	Slug         string  `json:"slug"`
-	Type         string  `json:"type"`
-	Release_date int     `json:"release_date"`
-	Rating       float64 `json:"rating"`
-	Content      string  `json:"content,omitempty"`
-	Runtime      string  `json:"runtime,omitempty"`
-	Age          string  `json:"age,omitempty"`
-	Trailer      string  `json:"trailer,omitempty"`
-	Thumb        string  `json:"thumb"`
-	Poster       string  `json:"poster"`
-	Genre        string  `json:"genre"`
-	Episode 	 int 	 `json:"episode"`
+	Id           int     	`json:"id"`
+	Name         string  	`json:"name"`
+	Origin_name  string  	`json:"origin_name"`
+	Slug         string  	`json:"slug"`
+	Type         string  	`json:"type"`
+	Release_date int     	`json:"release_date"`
+	Rating       float64 	`json:"rating"`
+	Content      string  	`json:"content,omitempty"`
+	Runtime      string  	`json:"runtime,omitempty"`
+	Age          string  	`json:"age,omitempty"`
+	Trailer      string  	`json:"trailer,omitempty"`
+	Thumb        string  	`json:"thumb"`
+	Poster       string  	`json:"poster"`
+	Updated_at 	 time.Time 	`json:"updated_at"`
+	Genre        string  	`json:"genre"`
+	Episode 	 int 	 	`json:"episode"`
 	Episode_total 		 int 	 `json:"episode_total"`
 }
 
@@ -79,6 +82,7 @@ type MovieDetailDTO struct {
 	Runtime      string      `json:"runtime,omitempty"`
 	Age          string      `json:"age,omitempty"`
 	Trailer      string      `json:"trailer,omitempty"`
+	Updated_at   time.Time	 `json:"updated_at"`
 	Image        ImageDTO    `json:"image"`
 	Genres       []GenreDTO  `json:"genres"`
 	Servers      []ServerDTO `json:"servers"`
@@ -100,6 +104,7 @@ func MapMovieDetailDTO(movie MovieRawDTO) *MovieDetailDTO {
 		Runtime:      movie.Runtime,
 		Age:          movie.Age,
 		Trailer:      movie.Trailer,
+		Updated_at:   movie.Updated_at,
 		Image: ImageDTO{
 			Thumb:  movie.Thumb,
 			Poster: movie.Poster,
