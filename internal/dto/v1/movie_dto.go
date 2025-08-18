@@ -92,6 +92,12 @@ type Filter struct {
 	Release_date 	*string
 	Type 			*string
 }
+
+type SiteMap struct {
+	Slug 		string 		`json:"slug"`
+	Updated_at 	time.Time 	`json:"updated_at"`
+}
+
 func MapMovieDetailDTO(movie MovieRawDTO) *MovieDetailDTO {
 	return &MovieDetailDTO{
 		Name:         movie.Name,

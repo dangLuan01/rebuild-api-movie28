@@ -26,6 +26,10 @@ type GetMovieBySlugParam struct {
 	Slug string `uri:"slug" binding:"slug"`
 }
 
+type GetSiteMapParam struct {
+	Type string `form:"type" binding:"required,oneof=single series"`
+}
+
 func NewMovieHandler(service v1service.MovieService) *MovieHandler {
 	return &MovieHandler{
 		service: service,
@@ -106,5 +110,22 @@ func (mh *MovieHandler) FilterMovie(ctx *gin.Context)  {
 	}
 	
 	utils.ResponseSuccess(ctx, http.StatusOK, v1dto.MapMovieDTOWithPanigate(movieFilter, paginate))
+}
 
+func (mh *MovieHandler)GetSiteMapMovie(ctx *gin.Context)  {
+	var params GetSiteMapParam
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(err))
+
+		return
+	}
+	
+	movie, err := mh.service.SiteMapMovie(params.Type)
+	if err != nil {
+		utils.ResponseError(ctx, err)
+
+		return
+	}
+
+	utils.ResponseSuccess(ctx, http.StatusOK, movie)
 }

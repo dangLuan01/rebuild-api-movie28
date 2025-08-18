@@ -378,5 +378,24 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 		PageSize: pageSize,
 		TotalPages: utils.TotalPages(totalSize, pageSize),
 	}, nil
+}
 
+func (mr *SqlMovieRepository) SiteMap(types string) ([]v1dto.SiteMap, error) {
+	
+	var movies []v1dto.SiteMap
+	ds := mr.db.From(goqu.T("movies")).
+		Select(
+			goqu.C("slug"),
+			goqu.C("updated_at"),
+		).
+		Where(
+			goqu.C("type").Eq(types),
+			goqu.C("status").Eq(1),
+		).
+		Order(goqu.C("updated_at").Desc())
+	if err := ds.ScanStructs(&movies); err != nil {
+		return nil, fmt.Errorf("faile fetch movie:%v", err)
+	}
+
+	return movies, nil
 }

@@ -179,3 +179,20 @@ func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) 
 	
 	return cacheFilter.MovieFilter, cacheFilter.Paginate, nil
 }
+
+func (ms *movieService)SiteMapMovie(types string) ([]v1dto.SiteMap, error) {
+	if types == "" {
+		types = "single"
+	}
+
+	found, err := ms.repo.SiteMap(types)
+	if err != nil {
+		return nil, utils.WrapError(
+			string(utils.ErrCodeBadRequest),
+			"An error occurred get movie",
+			err,
+		)
+	}
+	
+	return found, nil
+}
