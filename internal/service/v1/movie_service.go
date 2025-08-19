@@ -81,7 +81,7 @@ func (ms *movieService) GetAllMovies(page, pageSize int64) ([]v1dto.MovieRawDTO,
 func (ms *movieService) GetMovieDetail(slug, types string) (*v1dto.MovieDetailDTO, error) {
 
 	var movie *v1dto.MovieDetailDTO
-	key := fmt.Sprintf("movie:slug=%s", slug)
+	key := fmt.Sprintf("movie:slug=%s:type=%s", slug, types)
 
 	cacheMovie := ms.cache.Get(key, &movie)
 
