@@ -78,7 +78,7 @@ func (ms *movieService) GetAllMovies(page, pageSize int64) ([]v1dto.MovieRawDTO,
 	}, nil
 }
 
-func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, error) {
+func (ms *movieService) GetMovieDetail(slug, types string) (*v1dto.MovieDetailDTO, error) {
 
 	var movie *v1dto.MovieDetailDTO
 	key := fmt.Sprintf("movie:slug=%s", slug)
@@ -89,7 +89,7 @@ func (ms *movieService) GetMovieDetail(slug string) (*v1dto.MovieDetailDTO, erro
 		return movie, nil
 	}
 
-	movie, err :=ms.repo.FindBySlug(slug)
+	movie, err :=ms.repo.FindBySlug(slug, types)
 
 	er := fmt.Sprintln(err)
 	if strings.Contains(er,"not found") {
@@ -180,7 +180,7 @@ func (ms *movieService) FilterMovie(filter *v1dto.Filter, page, pageSize int64) 
 	return cacheFilter.MovieFilter, cacheFilter.Paginate, nil
 }
 
-func (ms *movieService)SiteMapMovie(types string) ([]v1dto.SiteMap, error) {
+func (ms *movieService) SiteMapMovie(types string) ([]v1dto.SiteMap, error) {
 	if types == "" {
 		types = "single"
 	}

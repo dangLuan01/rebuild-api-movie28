@@ -122,7 +122,7 @@ func (mr *SqlMovieRepository) FindAll(page, pageSize int64) ([]v1dto.MovieRawDTO
 	}, nil
 }
 
-func (mr *SqlMovieRepository) FindBySlug(slug string) (*v1dto.MovieDetailDTO, error) {
+func (mr *SqlMovieRepository) FindBySlug(slug, types string) (*v1dto.MovieDetailDTO, error) {
 	var (
 		movie_raw v1dto.MovieRawDTO
 		genres []v1dto.GenreDTO
@@ -151,7 +151,11 @@ func (mr *SqlMovieRepository) FindBySlug(slug string) (*v1dto.MovieDetailDTO, er
 		thumbSubquery.As("thumb"),
 	).
 	From(goqu.T("movies").As("m")).
-	Where(goqu.Ex{"slug": slug})
+	Where(goqu.Ex{
+			"slug": slug,
+			"type":	types,
+		},
+	)
 
 	found, err := ds.ScanStruct(&movie_raw)
 	if err != nil {
