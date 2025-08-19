@@ -23,7 +23,11 @@ type GetMovieQuery struct {
 	Type 		 string `form:"type" binding:"omitempty,oneof=featured single series"`
 }
 type GetMovieBySlugParam struct {
-	Slug string `uri:"slug" binding:"slug"`
+	Slug 	string `uri:"slug" binding:"slug"`
+}
+
+type GetMovieByTypeQuery struct {
+	Type 	string `form:"type" query:"type" binding:"required,oneof=single series"`
 }
 
 type GetSiteMapParam struct {
@@ -75,13 +79,24 @@ func (mh *MovieHandler) GetAllMovies(ctx *gin.Context)  {
 }
 
 func (mh *MovieHandler)GetMovieDetail(ctx *gin.Context) {
-	var param GetMovieBySlugParam
-
-	if err := ctx.ShouldBindUri(&param); err != nil {
+	var (
+		paramSlug GetMovieBySlugParam
+		queryType GetMovieByTypeQuery
+	)
+	
+	if err := ctx.ShouldBindUri(&paramSlug); err != nil {
+		
 		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(err))
 		return
 	}
-	movie, err := mh.service.GetMovieDetail(param.Slug)
+	
+	if err := ctx.ShouldBindQuery(&queryType); err != nil {
+		
+		utils.ResponseValidator(ctx, validation.HandlerValidationErrors(err))
+		return
+	}
+	
+	movie, err := mh.service.GetMovieDetail(paramSlug.Slug, queryType.Type)
 	if err != nil {
 		utils.ResponseError(ctx, err)
 		return
