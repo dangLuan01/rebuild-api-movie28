@@ -6,7 +6,6 @@ import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
 	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
-	"github.com/redis/go-redis/v9"
 )
 
 type GenreModule struct {
@@ -14,9 +13,9 @@ type GenreModule struct {
 	
 }
 
-func NewGenreModule(ctx *ModuleContext, redisClient *redis.Client) *GenreModule {
+func NewGenreModule(ctx *ModuleContext) *GenreModule {
 	genreRepo := genrerepository.NewSqlGenreRepository(ctx.DB)
-	genreService := v1service.NewGenreService(genreRepo, redisClient)
+	genreService := v1service.NewGenreService(genreRepo, ctx.Redis)
 	genreHandler := v1handler.NewGenreHandler(genreService)
 	genreRoutes := v1routes.NewGenreRoutes(genreHandler)
 

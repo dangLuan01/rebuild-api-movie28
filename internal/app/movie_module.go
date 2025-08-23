@@ -6,16 +6,15 @@ import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
 	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
-	"github.com/redis/go-redis/v9"
 )
 
 type MovieModule struct {
 	routes routes.Route
 }
 
-func NewMovieModule(ctx *ModuleContext, redisClient *redis.Client) *MovieModule {
+func NewMovieModule(ctx *ModuleContext) *MovieModule {
 	movieRepo := movierepository.NewSqlMovieRepository(ctx.DB)
-	movieService := v1service.NewMovieService(movieRepo, redisClient)
+	movieService := v1service.NewMovieService(movieRepo, ctx.Redis)
 	movieHandler := v1handler.NewMovieHandler(movieService)
 	movieRoutes := v1routes.NewMovieRoutes(movieHandler)
 

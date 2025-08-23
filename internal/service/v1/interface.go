@@ -38,3 +38,7 @@ type ThemeService interface {
 type SearchService interface {
 	SearchMovie(query string) ([]models.Movie, error)
 }
+
+type ProxyService interface {
+	PassHeader(ctx *gin.Context, query string)
+}
