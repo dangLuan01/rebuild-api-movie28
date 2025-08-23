@@ -56,14 +56,19 @@ func NewApplication(cfg *config.Config) *Application {
 
 	modules := []Module{
 		NewUserModule(ctx),
-		NewGenreModule(ctx, ctx.Redis),
-		NewMovieModule(ctx, ctx.Redis),
+		NewGenreModule(ctx),
+		NewMovieModule(ctx),
 		NewCategoryModule(ctx),
-		NewThemeModule(ctx, ctx.Redis),
+		NewThemeModule(ctx),
 		NewSearchModule(ctx.ES),
 	}
 
+	modulesPublic := []Module{
+		NewProxyModule(),
+	}
+
 	routes.RegisterRoute(r, getModuleRoutes(modules)...)
+	routes.RegisterPublicRoute(r, getModuleRoutes(modulesPublic)...)
 	return &Application{
 		config: cfg,
 		router: r,

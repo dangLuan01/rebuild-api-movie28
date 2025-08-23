@@ -6,16 +6,15 @@ import (
 	"github.com/dangLuan01/rebuild-api-movie28/internal/routes"
 	v1routes "github.com/dangLuan01/rebuild-api-movie28/internal/routes/v1"
 	v1service "github.com/dangLuan01/rebuild-api-movie28/internal/service/v1"
-	"github.com/redis/go-redis/v9"
 )
 
 type ThemeModule struct {
 	routes routes.Route
 }
 
-func NewThemeModule(ctx *ModuleContext, redisClient *redis.Client) *ThemeModule {
+func NewThemeModule(ctx *ModuleContext) *ThemeModule {
 	themeRepo := themerepository.NewSqlThemeRepository(ctx.DB)
-	themeService := v1service.NewThemeService(themeRepo, redisClient)
+	themeService := v1service.NewThemeService(themeRepo, ctx.Redis)
 	themeHandler := v1handler.NewThemeHandler(themeService)
 	themeRoutes := v1routes.NewThemeRoutes(themeHandler)
 

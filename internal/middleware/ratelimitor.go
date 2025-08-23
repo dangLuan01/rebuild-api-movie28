@@ -30,7 +30,7 @@ func getRateLimiter(ip string) *rate.Limiter {
 
 	client, exists := clients[ip]
 	if !exists {
-		limiter := rate.NewLimiter(5, 10)
+		limiter := rate.NewLimiter(10, 15)
 		client = &Client{
 			limiter:  limiter,
 			lastSeen: time.Now(),

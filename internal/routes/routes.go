@@ -11,7 +11,8 @@ type Route interface {
 }
 
 func RegisterRoute(r *gin.Engine, routes ...Route) {
-	api := r.Group("/api/v1")
+	api 	:= r.Group("/api/v1")
+	
 
 	api.Use(
 		middleware.ApiKeyMiddleware(),
@@ -24,5 +25,17 @@ func RegisterRoute(r *gin.Engine, routes ...Route) {
 
 	for _, route := range routes {
 		route.Register(api)
+		
+	}
+}
+func RegisterPublicRoute(r *gin.Engine, routes ...Route) {
+	public := r.Group("/proxy")
+
+	public.Use(
+		middleware.RateLimiterMiddleware(),
+	)
+
+	for _, route := range routes {
+		route.Register(public)
 	}
 }
