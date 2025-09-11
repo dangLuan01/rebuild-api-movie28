@@ -2,7 +2,6 @@ package themerepository
 
 import (
 	"fmt"
-	"log"
 	"sync"
 
 	v1dto "github.com/dangLuan01/rebuild-api-movie28/internal/dto/v1"
@@ -86,7 +85,7 @@ func (tr *SqlThemeRepository) buildMovieQueryFromTheme(theme v1dto.ThemeDTO) *go
 
     // Điều kiện year
     if theme.Year != nil {
-       query = query.Where(goqu.I("m.release_year").Eq(*theme.Year))
+       query = query.Where(goqu.I("m.release_date").Eq(*theme.Year))
     }
     query = query.Order(goqu.I("m.updated_at").Desc())
     return query
@@ -98,7 +97,7 @@ func (tr *SqlThemeRepository) FindMoviesByTheme(theme v1dto.ThemeDTO, page, page
     baseQuery   := tr.buildMovieQueryFromTheme(theme)
     totalSize, err := baseQuery.Count()
     if err != nil {
-        return nil, fmt.Errorf("Failed to count movies: %v", err)
+        return nil, fmt.Errorf("failed to count movies: %v", err)
     }
     var movies []v1dto.MovieRawDTO
     err = baseQuery.Offset(uint(offset)).
@@ -106,7 +105,7 @@ func (tr *SqlThemeRepository) FindMoviesByTheme(theme v1dto.ThemeDTO, page, page
         ScanStructs(&movies)
     
     if err != nil {
-        return nil, fmt.Errorf("Failed to scant movies: %v", err)
+        return nil, fmt.Errorf("failed to scant movies: %v", err)
     }
     
 	movie := v1dto.MapMovieDTOWithPanigate(movies, v1dto.Paginate{
@@ -134,10 +133,10 @@ func (tr *SqlThemeRepository) FindAll(id, pageTheme, pageMovie, pageSize int64) 
     }
     totalSize, err := ds.Count()
     if err != nil {
-        return nil, fmt.Errorf("Failed to count themes: %v", err)
+        return nil, fmt.Errorf("failed to count themes: %v", err)
     }
     if err := ds.Order(goqu.I("t.priority").Asc()).Offset(uint(offset)).Limit(uint(pageSize)).ScanStructs(&themes); err != nil {
-        return nil, fmt.Errorf("Failed to scan themes: %v", err)
+        return nil, fmt.Errorf("failed to scan themes: %v", err)
     }
 
     // Kênh để thu thập kết quả và lỗi
@@ -192,10 +191,9 @@ func (tr *SqlThemeRepository) FindAll(id, pageTheme, pageMovie, pageSize int64) 
 
     // Kiểm tra lỗi
     if len(errors) > 0 {
-        log.Printf("Encountered %d errors while fetching movies: %v", len(errors), errors)
         // Nếu tất cả theme đều lỗi, trả về lỗi
         if len(errors) == len(themes) {
-            return nil, fmt.Errorf("Failed to fetch movies for all themes: %v", errors)
+            return nil, fmt.Errorf("failed to fetch movies for all themes: %v", errors)
         }
     }
 
