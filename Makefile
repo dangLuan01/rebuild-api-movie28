@@ -1,4 +1,4 @@
-server: 
+run: 
 	cd ./cmd/api && go run .
 host:
 	cd ./cmd/api && ./api

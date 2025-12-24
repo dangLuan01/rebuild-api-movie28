@@ -290,7 +290,7 @@ func (mr *SqlMovieRepository) Filter(filter *v1dto.Filter, page, pageSize int64)
 		Select(goqu.I("g.name")).Limit(1)
 	episode := mr.db.From(goqu.T("episodes").As("e")).
 		Select(
-			goqu.COUNT("e.episode"),
+			goqu.COUNT(goqu.DISTINCT(goqu.I("e.episode"))),
 		).
 		Where(
 			goqu.I("e.movie_id").Eq(goqu.I("m.id")),
