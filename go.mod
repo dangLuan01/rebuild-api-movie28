@@ -1,6 +1,6 @@
 module github.com/dangLuan01/rebuild-api-movie28
 
-go 1.25.1
+go 1.25.5
 
 require (
 	github.com/doug-martin/goqu/v9 v9.19.0
